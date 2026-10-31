@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<mapsource inline='true' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <MapAttribution2 />
+  </document-format-change-manifest>
+  <connection
+  class='CustomMapbox'
+  inline='true'
+  offline=''
+  port=''
+  server='/api/unfurl-maps'
+  url=''
+  wait-tile-color='#dddddd' />
+  <languages />
+  <layers>
+    <layer display-name='Streets' name='Streets' show-ui='true' type='features' />
+  </layers>
+  <properties />
+  <map-styles>
+    <map-style display-name='Streets' name='/api/unfurl-maps?action=tile' wait-tile-color='#dddddd'>
+      <map-layer-style name='streets' request-string='' />
+    </map-style>
+  </map-styles>
+  <mapsource-defaults version='18.1'>
+    <style>
+      <style-rule element='map'>
+        <format attr='map-style' value='/api/unfurl-maps?action=tile' />
+        <format attr='washout' value='0' />
+      </style-rule>
+    </style>
+  </mapsource-defaults>
+  <map-attribution copyright-string='© Bagantara Maps' copyright-url='' short-copyright-string='© Bagantara' />
+  <map-attribution2 copyright-string='© OpenStreetMap' short-copyright-string='© OSM' copyright-url='' />
+</mapsource>

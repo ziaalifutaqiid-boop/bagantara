@@ -1,0 +1,17 @@
+{
+  "name": "bagantara-rental-publik",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Katalog Publik Penyewa Mobil Bagantara - Zero-Map, Zero-Login, ETag 304 & Direct WhatsApp Booking",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-secure.mjs"
+  },
+  "devDependencies": {
+    "acorn": "^8.11.3",
+    "terser": "^5.31.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

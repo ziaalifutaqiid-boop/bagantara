@@ -1,0 +1,1087 @@
+/* ==========================================
+   SISTEM PEMETAAN & KATALOG DRIVER RINGKAS (V12.5 ACCORDION & APOLOGY BANNER)
+   ========================================== */
+#view-map {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    padding-bottom: 0 !important;
+}
+.map-area {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    background-color: #0f172a;
+    position: relative;
+    z-index: 1;
+} 
+#map-container { width: 100%; height: 100%; position: relative; z-index: 1; }
+.leaflet-control-attribution { display: none !important; }
+
+body:not(.light-mode) #map-container .leaflet-tile-pane {
+    filter: invert(90%) grayscale(20%) sepia(20%) hue-rotate(195deg) saturate(350%) brightness(85%) contrast(110%);
+}
+.leaflet-control-container .leaflet-top.leaflet-left { top: 90px; }
+
+/* ISOLASI INPUT TRANSPARAN: Hanya untuk baris rute & jastip agar TIDAK merusak input chat atau kotak catatan */
+.route-row-inline .input-area input,
+.jastip-input-row input {
+    background-color: transparent !important;
+    color: var(--text-main) !important;
+    box-shadow: none !important;
+}
+
+/* PURE CSS TEARDROP PIN */
+.center-pin-container {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -100%); 
+    z-index: 1000; pointer-events: none; 
+    display: flex; flex-direction: column; align-items: center;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pin-label {
+    background: var(--void-black); color: var(--text-main);
+    border: 1px solid var(--neon-gold); border-radius: 20px;
+    padding: 6px 14px; font-family: 'Space Grotesk', monospace;
+    font-size: 0.7rem; font-weight: bold; margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8); white-space: nowrap;
+}
+
+.css-pin-marker {
+    width: 32px; height: 32px;
+    border-radius: 50% 50% 50% 0;
+    background: #ef4444;
+    position: absolute; bottom: 0;
+    transform: rotate(-45deg);
+    box-shadow: -3px 3px 6px rgba(0,0,0,0.4);
+    border: 2px solid #ffffff;
+    transition: background 0.3s ease;
+}
+.css-pin-marker::after {
+    content: ''; width: 12px; height: 12px;
+    background: #ffffff; border-radius: 50%;
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
+.pin-shadow-base {
+    width: 14px; height: 6px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    position: absolute; bottom: -3px;
+    filter: blur(2px);
+}
+.css-pin-marker::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 60px; height: 60px;
+    background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444;
+    border-radius: 50%; transform: translate(-50%, -50%);
+    z-index: -1; animation: gps-pin-pulse 1.6s infinite ease-out;
+}
+
+.pickup-mode .css-pin-marker { background: #bd8c11; }
+.pickup-mode .css-pin-marker::before { background: rgba(189, 140, 17, 0.3); border-color: #bd8c11; }
+
+.jastip-store-mode .css-pin-marker { background: #3b82f6; }
+.jastip-store-mode .css-pin-marker::before { background: rgba(59, 130, 246, 0.3); border-color: #3b82f6; }
+
+@keyframes gps-pin-pulse {
+    0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+.map-is-moving .center-pin-container { transform: translate(-50%, -130%); }
+
+/* LAYAR PENCARIAN RUTE & PITA DRIVER TERKUNCI */
+#view-search-route { z-index: 20; display: flex; flex-direction: column; background: var(--card-bg-1); overflow: hidden; } 
+#view-search-route.compact-mode .hidden-compact { display: none !important; }
+#view-search-route.expanded-mode { padding-top: 0 !important; background: var(--card-bg-1); }
+
+#view-search-route .search-expansion-card { 
+    margin: 0; border-radius: 0; height: auto; 
+    background: var(--card-bg-1); 
+    border-top: none;
+    padding: calc(env(safe-area-inset-top, 20px) + 18px) 18px calc(env(safe-area-inset-bottom, 20px) + 20px) 18px; 
+    box-shadow: none;
+    z-index: 2; position: relative; 
+    flex-grow: 1; margin-top: 0; 
+    overflow-y: auto; 
+}
+
+.search-expansion-card { 
+    margin: 0; border-radius: 24px 24px 0 0; height: auto; 
+    background: var(--card-bg-1); 
+    border-top: 1px solid var(--border-cyber);
+    padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; 
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.15);
+    z-index: 2; position: relative; 
+    flex-grow: 1; margin-top: auto; 
+}
+
+.prelocked-driver-banner {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.14), rgba(16, 185, 129, 0.08));
+    border: 1px solid var(--border-gold-subtle);
+    border-left: 3px solid var(--neon-gold);
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+}
+
+.route-inputs-container { display: flex; flex-direction: column; gap: 8px; position: relative; }
+.route-row-inline {
+    display: grid; grid-template-columns: 25px 1fr 25px 32px 32px; align-items: center; gap: 4px;
+    border-bottom: 1px solid var(--border-cyber); padding-bottom: 5px; position: relative; z-index: 2;
+}
+.route-row-inline:focus-within { border-bottom-color: var(--neon-gold); }
+.icon-point { text-align: center; font-size: 1.1rem; }
+.input-area { display: flex; align-items: center; position: relative; }
+.input-area input { width: 100%; border: none; outline: none; font-size: 0.95rem; font-family: 'Outfit', sans-serif; padding-right: 25px; }
+.input-area input::placeholder { color: var(--text-muted); font-size: 0.85rem; }
+.btn-clear-input { position: absolute; right: 0; background: transparent; border: none; color: var(--text-muted); font-size: 0.9rem; cursor: pointer; display: none; }
+.btn-grid-action { background: var(--silver-metal); border: 1px solid transparent; border-radius: 8px; color: var(--text-main); font-size: 0.9rem; height: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; }
+.btn-grid-action:active { background: var(--border-cyber); }
+.route-connector { position: absolute; left: 12px; top: 22px; bottom: 22px; width: 2px; background: rgba(212, 175, 55, 0.25); z-index: 1; }
+
+.pulse-border { animation: pulse-border-anim 2s infinite; }
+.pulse-bg { animation: pulse-bg-anim 2s infinite; }
+@keyframes pulse-border-anim {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+@keyframes pulse-bg-anim {
+    0% { background-color: rgba(239, 68, 68, 0.15); }
+    50% { background-color: rgba(239, 68, 68, 0.35); }
+    100% { background-color: rgba(239, 68, 68, 0.15); }
+}
+
+.search-results-wrapper { position: relative; margin-top: 5px; }
+.search-results-dropdown {
+    position: absolute; top: 0; left: 0; right: 0; background: var(--card-bg-1); border: 1px solid var(--border-cyber);
+    border-radius: 12px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.45); max-height: 220px; overflow-y: auto;
+}
+.search-result-item { padding: 10px 12px; border-bottom: 1px solid var(--border-cyber); font-size: 0.75rem; cursor: pointer; line-height: 1.4; }
+.search-result-item:last-child { border-bottom: none; }
+
+.sticky-continue-btn {
+    position: fixed; bottom: 20px; left: 0; right: 0; padding: 15px;
+    background: linear-gradient(to top, var(--void-black) 80%, transparent);
+    display: flex; justify-content: center; z-index: 200;
+}
+
+.order-panel { 
+    position: relative; width: 100%; flex-shrink: 0; margin-top: -16px; z-index: 1000; 
+    border-radius: 22px 22px 0 0; background: var(--hud-bg); 
+    border-top: 2px solid var(--neon-gold); box-shadow: 0 -10px 30px rgba(0,0,0,0.45); 
+    padding: 12px 16px calc(env(safe-area-inset-bottom, 12px) + 12px) 16px; 
+    transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.order-panel.map-dragging-panel {
+    opacity: 0.42;
+    transform: translateY(6px);
+    pointer-events: none;
+}
+.price-display { display: flex; flex-direction: column; }
+.price-label { font-family: 'Space Grotesk', monospace; font-size: 0.65rem; font-weight: 600; color: var(--text-muted); letter-spacing: 1px; }
+.price-value { font-family: 'Space Grotesk', monospace; font-size: 1.35rem; font-weight: 800; color: var(--text-main); }
+
+.btn-float-gps { 
+    position: absolute; top: -54px; right: 15px; z-index: 1000; 
+    width: 42px; height: 42px; border-radius: 50%; 
+    background: var(--card-bg-1); border: 2px solid var(--neon-gold); 
+    color: var(--neon-gold); font-size: 1.15rem; 
+    display: flex; justify-content: center; align-items: center; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.35); cursor: pointer;
+}
+
+/* ==========================================
+   BERANDA KATALOG DRIVER AKTIF (COMPACT ACCORDION V11.9)
+   ========================================== */
+.mitra-catalog-shell {
+    padding: calc(env(safe-area-inset-top, 10px) + 8px) 12px 110px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.mitra-hud-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 11px;
+    border-radius: 13px;
+    background: linear-gradient(160deg, var(--card-bg-1), var(--card-bg-2));
+    border: 1px solid var(--border-gold-subtle);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+.mitra-hud-telemetry {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.mitra-hud-statusline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.mitra-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--neon-green);
+    display: inline-block;
+    box-shadow: 0 0 6px var(--neon-green);
+    flex-shrink: 0;
+}
+
+.mitra-hud-gpsline {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.mitra-refresh-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(212, 175, 55, 0.14);
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    color: var(--neon-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+body.light-mode .mitra-refresh-btn { color: #92600a; }
+.mitra-refresh-btn:active { transform: scale(0.92); }
+
+.catalog-chip,
+.radar-chip {
+    flex: 1 0 auto;
+    justify-content: center;
+    background: var(--card-bg-1);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-muted);
+    padding: 6px 9px;
+    border-radius: 10px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4.5px;
+    transition: all 0.15s ease;
+}
+
+.catalog-chip.active,
+.radar-chip.active {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.08));
+    border-color: var(--neon-gold);
+    color: var(--neon-gold);
+}
+body.light-mode .catalog-chip.active,
+.radar-chip.active {
+    color: #92600a;
+    border-color: #b47d1c;
+}
+
+.mitra-catalog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+/* ==========================================
+   BANNER & OVERLAY PERMINTAAN MAAF PENOLAKAN ORDER (#order-rejected-overlay)
+   ========================================== */
+.order-rejected-inline-card {
+    background: linear-gradient(160deg, var(--card-bg-1), var(--card-bg-2));
+    border: 1px solid var(--amber-border);
+    border-left: 3.5px solid var(--amber-accent);
+    border-radius: 14px;
+    padding: 11px 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    animation: fadeInRejectedBanner 0.28s ease-out;
+}
+
+.order-rejected-modal-card {
+    width: 92%;
+    max-width: 365px;
+    border-radius: 20px;
+    padding: 24px 20px;
+    border: 1.5px solid var(--border-gold-subtle);
+    border-top: 4px solid var(--amber-accent);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.75);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 11px;
+}
+
+.order-rejected-icon-wrap {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--amber-bg-soft);
+    border: 1.5px solid var(--amber-border);
+    color: var(--amber-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+.order-rejected-badge {
+    font-size: 0.56rem;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    color: var(--amber-accent);
+    background: var(--amber-bg-soft);
+    border: 1px solid var(--amber-border);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+@keyframes fadeInRejectedBanner {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* KARTU DRIVER RINGKAS TARIK-BAWAH (COMPACT ACCORDION) */
+.mitra-catalog-card {
+    background: linear-gradient(165deg, var(--card-bg-1), var(--card-bg-2));
+    border: 1px solid var(--border-cyber);
+    border-left: 3px solid var(--neon-gold);
+    border-radius: 14px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s ease;
+}
+
+.mitra-catalog-card.is-nearest {
+    border-color: rgba(16, 185, 129, 0.45);
+    border-left: 3.5px solid var(--neon-green);
+}
+
+.driver-card-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.tpl-avatar-ring {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    padding: 2px;
+    position: relative;
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.tpl-avatar-ring.warm-signal {
+    background: linear-gradient(135deg, var(--neon-gold), #b45309);
+}
+
+/* Lencana Urutan Pertama Terdekat */
+.badge-terdekat {
+    display: none;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.56rem;
+    font-weight: 900;
+    color: #052e16;
+    background: #10b981;
+    padding: 1px 6px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    flex-shrink: 0;
+}
+
+.btn-expand-drawer {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--void-black);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    transition: transform 0.25s ease, color 0.2s ease;
+}
+
+.mitra-catalog-card.expanded .btn-expand-drawer {
+    transform: rotate(180deg);
+    color: var(--neon-gold);
+    border-color: var(--border-gold-subtle);
+}
+
+/* Laci Tarik-Bawah (Drawer) */
+.driver-card-drawer {
+    display: none;
+    flex-direction: column;
+    gap: 9px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border-cyber);
+}
+
+.mitra-catalog-card.expanded .driver-card-drawer {
+    display: flex;
+}
+
+.mitra-plate-badge {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: var(--text-main);
+    background: var(--void-black);
+    border: 1px solid var(--border-cyber);
+    padding: 2px 7px;
+    border-radius: 6px;
+}
+
+.mitra-srv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+    gap: 7px;
+    width: 100%;
+}
+
+.btn-mitra-srv {
+    background: var(--void-black);
+    color: var(--neon-gold);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    padding: 9px 10px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+body.light-mode .btn-mitra-srv {
+    color: #92600a;
+    border-color: rgba(146, 96, 10, 0.45);
+}
+.btn-mitra-srv:active {
+    background: var(--neon-gold);
+    color: #ffffff;
+    transform: scale(0.97);
+}
+
+.recent-places-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 0 4px 0;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.recent-places-bar::-webkit-scrollbar { display: none; }
+
+.recent-place-chip {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--void-black);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-main);
+    padding: 5px 7px 5px 11px;
+    border-radius: 16px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    max-width: 215px;
+    transition: all 0.15s ease;
+}
+.recent-place-chip .chip-title-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+.recent-place-chip .chip-del-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: var(--danger-bg-soft);
+    color: var(--danger-accent);
+    font-size: 0.62rem;
+    font-weight: 900;
+    margin-left: 2px;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+.recent-place-chip .chip-del-btn:hover,
+.recent-place-chip .chip-del-btn:active {
+    background: #ef4444;
+    color: #ffffff;
+    transform: scale(1.08);
+}
+.recent-place-chip:active {
+    border-color: var(--neon-gold);
+    background: rgba(212, 175, 55, 0.15);
+    transform: scale(0.97);
+}
+
+.recent-clear-all-chip {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--danger-bg-soft);
+    border: 1px dashed rgba(239, 68, 68, 0.45);
+    color: var(--danger-accent);
+    padding: 5px 10px;
+    border-radius: 16px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    font-family: 'Space Grotesk', monospace;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.recent-clear-all-chip:active {
+    background: #ef4444;
+    color: #ffffff;
+    transform: scale(0.96);
+}
+
+/* ==========================================
+   FITUR #2: QUICK FARE PREVIEW BAR (ZERO QUOTA RAM HAVERSINE)
+   ========================================== */
+.quick-fare-shell {
+    background: var(--card-bg-1);
+    border: 1px solid var(--border-cyber);
+    border-left: 3px solid var(--neon-gold);
+    border-radius: 12px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.quick-fare-input-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.quick-fare-input-row input {
+    flex: 1;
+    min-width: 0;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: var(--text-main) !important;
+    font-size: 0.74rem;
+    font-family: 'Outfit', sans-serif;
+    padding: 2px 0;
+}
+
+.quick-fare-input-row input::placeholder {
+    color: var(--text-muted) !important;
+    font-size: 0.71rem;
+}
+
+.quick-fare-dist-pill {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--neon-green);
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    padding: 2px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.quick-fare-clear-btn {
+    background: var(--danger-bg-soft);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: var(--danger-accent);
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.quick-fare-preset-toggle {
+    background: rgba(212, 175, 55, 0.14);
+    border: 1px solid var(--border-gold-subtle);
+    color: var(--neon-gold);
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.62rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.quick-fare-presets-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 3px;
+    border-top: 1px dashed var(--border-cyber);
+}
+.quick-fare-presets-row::-webkit-scrollbar { display: none; }
+
+.quick-dist-chip {
+    flex: 0 0 auto;
+    background: var(--void-black);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-main);
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.61rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.quick-dist-chip.active,
+.quick-dist-chip:active {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+.quick-fare-card-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--emerald-accent);
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    padding: 1px 7px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+/* ==========================================
+   KAPSUL IMPOR GOOGLE MAPS URUTAN PALING ATAS (TOP PRIORITY CAPSULE)
+   ========================================== */
+.quick-gmaps-top-pill {
+    flex: 0 0 auto;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(16, 185, 129, 0.12));
+    border: 1px solid var(--neon-gold);
+    color: var(--neon-gold);
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.62rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.15);
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+body.light-mode .quick-gmaps-top-pill {
+    color: #92600a;
+    border-color: #b47d1c;
+}
+.quick-gmaps-top-pill:active {
+    transform: scale(0.95);
+    background: var(--neon-gold);
+    color: #090d16;
+}
+
+.gmaps-top-dropdown-capsule {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 9px 12px;
+    background: linear-gradient(135deg, rgba(25, 36, 58, 0.98), rgba(15, 23, 42, 0.98));
+    border-bottom: 1.5px solid var(--neon-gold);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background 0.15s ease;
+}
+body.light-mode .gmaps-top-dropdown-capsule {
+    background: linear-gradient(135deg, #fef3c7, #fffbeb);
+    border-bottom-color: #b47d1c;
+}
+.gmaps-top-dropdown-capsule:active {
+    background: rgba(212, 175, 55, 0.25);
+}
+
+/* ==========================================
+   MITIGASI VISUAL KARTU DRIVER DI BAWAH TARIF MINIMAL (RED BADGE + GREYED OUT + KAPSUL TETAP PILIH)
+   ========================================== */
+.quick-fare-card-pill.is-below-min {
+    color: #fca5a5 !important;
+    background: rgba(239, 68, 68, 0.18) !important;
+    border: 1px solid rgba(239, 68, 68, 0.55) !important;
+}
+body.light-mode .quick-fare-card-pill.is-below-min {
+    color: #b91c1c !important;
+    background: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(185, 28, 28, 0.45) !important;
+}
+
+.mitra-catalog-card.below-min-tariff {
+    opacity: 0.68;
+    filter: saturate(0.55);
+    border-color: rgba(239, 68, 68, 0.38) !important;
+    border-left: 3.5px solid var(--danger-accent) !important;
+    background: linear-gradient(165deg, rgba(19, 28, 46, 0.65), rgba(9, 13, 22, 0.78));
+    transition: all 0.22s ease;
+}
+body.light-mode .mitra-catalog-card.below-min-tariff {
+    background: #f1f5f9;
+}
+
+.mitra-catalog-card.below-min-tariff.min-tariff-unlocked {
+    opacity: 1 !important;
+    filter: none !important;
+    border-color: var(--neon-gold) !important;
+    border-left: 3.5px solid var(--neon-gold) !important;
+    background: linear-gradient(165deg, var(--card-bg-1), var(--card-bg-2));
+}
+
+.min-tariff-gate-box {
+    margin-top: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.09);
+    border: 1px dashed rgba(239, 68, 68, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.mitra-catalog-card.min-tariff-unlocked .min-tariff-gate-box {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.45);
+}
+
+.min-tariff-gate-text {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 0.66rem;
+    line-height: 1.38;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.capsule-tetap-pilih {
+    align-self: flex-start;
+    width: 100%;
+    background: rgba(239, 68, 68, 0.16);
+    border: 1px solid rgba(239, 68, 68, 0.55);
+    color: #fca5a5;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.18s ease;
+}
+body.light-mode .capsule-tetap-pilih {
+    color: #b91c1c;
+    background: rgba(239, 68, 68, 0.12);
+}
+.capsule-tetap-pilih:active,
+.mitra-catalog-card.min-tariff-unlocked .capsule-tetap-pilih {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: var(--neon-green);
+    color: var(--emerald-accent);
+}
+
+/* ==========================================
+   KAPSUL ELEGAN TAUTAN LOKASI DRIVER TERCATAT SERVER & MODAL PEMBERITAHUAN
+   ========================================== */
+.driver-last-loc-capsule {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: var(--neon-gold);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(16, 185, 129, 0.1));
+    border: 1px solid rgba(212, 175, 55, 0.48);
+    padding: 2.5px 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+body.light-mode .driver-last-loc-capsule {
+    color: #92600a;
+    border-color: rgba(180, 125, 28, 0.55);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(16, 185, 129, 0.08));
+}
+.driver-last-loc-capsule i {
+    color: var(--neon-green);
+    font-size: 0.6rem;
+}
+.driver-last-loc-capsule:hover,
+.driver-last-loc-capsule:active {
+    transform: scale(0.95);
+    border-color: var(--neon-gold);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.32), rgba(16, 185, 129, 0.2));
+}
+
+.driver-loc-modal-card {
+    width: 100%;
+    max-width: 355px;
+    background: linear-gradient(160deg, var(--card-bg-1), var(--card-bg-2));
+    border: 1.5px solid var(--border-gold-subtle);
+    border-top: 3.5px solid var(--neon-gold);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.78);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.driver-loc-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-cyber);
+}
+
+.driver-loc-modal-ring {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: rgba(212, 175, 55, 0.14);
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    color: var(--neon-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.driver-loc-modal-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--void-black);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.driver-loc-telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: var(--void-black);
+    border: 1px solid var(--border-cyber);
+    border-radius: 12px;
+    padding: 9px 11px;
+}
+
+.driver-loc-telemetry-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.driver-loc-telemetry-label {
+    font-size: 0.52rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.driver-loc-telemetry-val {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.driver-loc-notice-box {
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px dashed rgba(212, 175, 55, 0.42);
+    border-left: 3px solid var(--neon-gold);
+    border-radius: 11px;
+    padding: 10px 11px;
+    text-align: left;
+}
+
+.driver-loc-btn-cancel {
+    flex: 1;
+    background: var(--void-black);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-muted);
+    border-radius: 11px;
+    padding: 10px 12px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.driver-loc-btn-gmaps {
+    flex: 2;
+    background: linear-gradient(135deg, #e5c687 0%, #c5a880 55%, #a37c40 100%);
+    color: #090d16 !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 11px;
+    padding: 10px 12px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.68rem;
+    font-weight: 900;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.32);
+}
+
+
+/* ==========================================
+   LENCANA & TOMBOL QRIS PENGEMUDI (KATALOG & MODAL)
+   ========================================== */
+.badge-qris-ready {
+    display: inline-flex;
+    align-items: center;
+    gap: 3.5px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.55rem;
+    font-weight: 900;
+    color: var(--emerald-accent);
+    background: rgba(16, 185, 129, 0.16);
+    border: 1px solid rgba(16, 185, 129, 0.48);
+    padding: 1.5px 6px;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    cursor: pointer;
+}
+body.light-mode .badge-qris-ready {
+    color: #047857;
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(4, 120, 87, 0.45);
+}
+
+.btn-preview-driver-qris {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(16, 185, 129, 0.16));
+    border: 1px solid var(--neon-gold);
+    color: var(--neon-gold);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.62rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+body.light-mode .btn-preview-driver-qris {
+    color: #92600a;
+    border-color: #b47d1c;
+}
+.btn-preview-driver-qris:active {
+    transform: scale(0.95);
+    background: var(--neon-gold);
+    color: #090d16;
+}

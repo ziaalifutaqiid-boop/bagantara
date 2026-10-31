@@ -1,0 +1,23 @@
+{
+  "name": "bagantara-superapp-publik",
+  "version": "14.0.0",
+  "private": true,
+  "type": "module",
+  "description": "BAGANTARA Super-App Publik Modular v14.0 (Menyatukan Transportasi Driver v13.2 [Ride, Car, Express, Jastip] & Katalog Rental Mobil v2.3 dengan Isolasi Mutlak 5 Node Firebase)",
+  "scripts": {
+    "build": "node scripts/build-superapp.mjs",
+    "build:ojol": "node modules/transport-driver/scripts/build-secure.mjs",
+    "build:rental": "node modules/rental-mobil/scripts/build-secure.mjs"
+  },
+  "devDependencies": {
+    "acorn": "^8.11.3",
+    "javascript-obfuscator": "^4.1.1",
+    "terser": "^5.31.0"
+  },
+  "optionalDependencies": {
+    "javascript-obfuscator": "^4.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

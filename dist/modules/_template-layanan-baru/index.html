@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BAGANTARA - Template Layanan Baru</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/template-service.css">
+</head>
+<body>
+    <main class="tpl-service-shell">
+        <section class="tpl-hero-card">
+            <div class="tpl-badge">
+                <i class="fa-solid fa-cubes"></i>
+                <span>CETAKAN MODUL LAYANAN BARU</span>
+            </div>
+            <h1 class="tpl-title">Starter Kit Layanan Ke-3 Bagantara</h1>
+            <p class="tpl-desc">
+                Modul ini adalah cetakan siap pakai yang sudah terhubung otomatis dengan <b>BagantaraHostBridge</b> untuk sinkronisasi Lokasi GPS Tunggal (<code>bgn_superapp_shared_gps</code>), Tema Siang/Malam Dua Arah, serta Siklus Hidup Hibernasi Memori.
+            </p>
+            <div class="tpl-telemetry-grid">
+                <div class="tpl-telemetry-box">
+                    <span class="tpl-telemetry-label">STATUS LOKASI GPS INDUK</span>
+                    <span id="tplGpsStatusText" class="tpl-telemetry-value">Menunggu sinkronisasi GPS...</span>
+                </div>
+                <div class="tpl-telemetry-box">
+                    <span class="tpl-telemetry-label">MODE TEMA AKTIF</span>
+                    <span id="tplThemeStatusText" class="tpl-telemetry-value">Otomatis</span>
+                </div>
+            </div>
+            <div class="tpl-actions">
+                <button type="button" id="btnTplRequestGps" class="tpl-btn-primary">
+                    <i class="fa-solid fa-location-crosshairs"></i>
+                    <span>Sinkronkan GPS Sekarang</span>
+                </button>
+                <button type="button" id="btnTplToggleTheme" class="tpl-btn-secondary">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                    <span>Uji Ganti Tema Dua Arah</span>
+                </button>
+            </div>
+        </section>
+    </main>
+    <script src="./js/template-service.js" defer></script>
+</body>
+</html>

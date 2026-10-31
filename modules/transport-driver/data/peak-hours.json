@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "zones": {
+    "KDR-PARE-01": {
+      "is_active": false,
+      "rules": [
+        { "name": "Sore Sibuk", "start_time": "16:00", "end_time": "19:00", "multiplier_factor": 1.25, "markup_flat": 2000 },
+        { "name": "Hujan / Ekstrem", "start_time": "00:00", "end_time": "23:59", "multiplier_factor": 1.50, "markup_flat": 0 }
+      ]
+    },
+    "MLG-01": {
+      "is_active": false,
+      "rules": [
+        { "name": "Macet Malang", "start_time": "15:00", "end_time": "20:00", "multiplier_factor": 1.30, "markup_flat": 3000 }
+      ]
+    },
+    "SBY-01": { "is_active": false, "rules": [] },
+    "SDA-01": { "is_active": false, "rules": [] },
+    "GSK-01": { "is_active": false, "rules": [] },
+    "MJK-01": { "is_active": false, "rules": [] },
+    "PSR-01": { "is_active": false, "rules": [] },
+    "BTU-01": { "is_active": false, "rules": [] },
+    "BLT-01": { "is_active": false, "rules": [] },
+    "MDN-01": { "is_active": false, "rules": [] }
+  }
+}

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bagantara Rental | Katalog Penyewaan Mobil Terdekat</title>
+
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#070d1f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="./assets/icon-192.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'void-black': '#070d1f',
+                        'navy-base': '#0d1630',
+                        'luxury-gold': '#c5a880'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./css/theme-rental-publik.css?v=2.3">
+</head>
+<body class="select-none">
+
+    <!-- =====================================================================
+         1. LAYAR IZIN LOKASI PERANGKAT (#gps-mandatory-lock-overlay)
+         ===================================================================== -->
+    <div id="gps-mandatory-lock-overlay" class="gps-lock-overlay" role="dialog" aria-modal="true">
+        <div class="gps-lock-card">
+            <div class="gps-loc-ring-wrap">
+                <div class="gps-loc-pulse-1"></div>
+                <div class="gps-loc-pulse-2"></div>
+                <div class="gps-loc-core">
+                    <i id="gpsLockIcon" class="fa-solid fa-location-dot text-2xl text-[#c5a880]"></i>
+                </div>
+            </div>
+
+            <span class="text-[0.58rem] font-extrabold uppercase tracking-[0.18em] px-3 py-1 rounded-full bg-[#c5a880]/15 text-[#c5a880] border border-[#c5a880]/40 mb-2">
+                LAYANAN RENTAL MOBIL TERDEKAT
+            </span>
+
+            <h1 id="gpsLockTitle" class="font-display font-bold text-lg sm:text-xl mb-1.5" style="color: var(--text-main);">
+                Aktifkan Lokasi Perangkat Anda
+            </h1>
+
+            <p id="gpsLockDesc" class="text-xs leading-relaxed mb-4" style="color: var(--text-sub);">
+                Aktifkan layanan lokasi agar kami dapat menampilkan armada rental mobil yang tersedia di sekitar Anda secara akurat.
+            </p>
+
+            <div class="w-full rounded-2xl border p-3 text-left space-y-2 mb-4" style="background: var(--bg-subtle); border-color: var(--border-subtle);">
+                <div class="flex items-start gap-2.5 text-[0.68rem]" style="color: var(--text-sub);">
+                    <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5 shrink-0"></i>
+                    <span>Nyalakan fitur <b>Lokasi</b> di pengaturan perangkat Anda.</span>
+                </div>
+                <div class="flex items-start gap-2.5 text-[0.68rem]" style="color: var(--text-sub);">
+                    <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5 shrink-0"></i>
+                    <span>Pilih <b>"Izinkan / Allow"</b> saat browser meminta izin akses lokasi.</span>
+                </div>
+                <div class="flex items-start gap-2.5 text-[0.68rem]" style="color: var(--text-sub);">
+                    <i class="fa-solid fa-shield-halved text-[#c5a880] mt-0.5 shrink-0"></i>
+                    <span>Privasi aman: Lokasi hanya digunakan untuk mengurutkan garasi terdekat dari posisi Anda.</span>
+                </div>
+            </div>
+
+            <div id="gpsLockStatusBox" class="w-full rounded-xl px-3 py-2 mb-3.5 bg-amber-500/15 border border-amber-500/40 text-amber-400 text-[0.68rem] font-bold flex items-center justify-center gap-2">
+                <i class="fa-solid fa-location-dot animate-pulse"></i>
+                <span id="gpsLockStatusText">Meminta izin akses lokasi perangkat...</span>
+            </div>
+
+            <button type="button" id="btnRetryGpsLock" class="btn-gold-cta w-full py-3 flex items-center justify-center gap-2 shadow-xl">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Periksa Ulang Lokasi</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="app-container" class="app-shell">
+
+        <!-- =================================================================
+             TAB 1: KATALOG RENTAL MOBIL (#view-catalog)
+             ================================================================= -->
+        <section id="view-catalog" class="spa-tab-view">
+            <!-- HEADER BERANDA SUPER RINGKAS (Total Tinggi <= 115px) -->
+            <header class="catalog-top-header">
+                <div class="max-w-5xl mx-auto flex flex-col gap-1.5">
+                    <!-- BARIS 1 (Tinggi 36px): Logo (30x30px) + "Bagantara Rental" + titik hijau "Lokasi Aktif" di kiri, Tombol "Segarkan" & "Filter" (32px) di kanan -->
+                    <div class="h-[36px] flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <img src="./assets/logo.png" alt="Bagantara Rental" class="w-[30px] h-[30px] rounded-lg object-contain bg-[#0d1630] border border-[#c5a880]/45 p-0.5 shrink-0">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="font-display font-bold text-sm sm:text-base truncate" style="color: var(--text-main);">Bagantara Rental</span>
+                                <span id="headerGpsCoordBadge" class="inline-flex items-center gap-1 text-[0.6rem] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/35 shrink-0">
+                                    <span class="live-pulse-dot"></span>
+                                    <span>Lokasi Aktif</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" id="btnRefreshCatalog" class="header-action-btn" title="Perbarui Katalog Armada">
+                                <i id="iconRefreshCatalog" class="fa-solid fa-rotate-right text-[0.65rem]"></i>
+                                <span id="refreshCooldownBadge">Segarkan</span>
+                            </button>
+                            <button type="button" id="btnToggleComboFilter" class="header-action-btn" title="Buka Filter & Urutan">
+                                <i class="fa-solid fa-sliders text-[0.65rem]"></i>
+                                <span>Filter</span>
+                                <span id="badgeActiveFilterCount" class="font-mono-num text-[0.55rem] font-black px-1.5 py-0.2 rounded-full bg-[#c5a880] text-[#030712]">0</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- BARIS 2 (Tinggi 36px): Input Pencarian Lebar Penuh (100% width, tinggi 36px, teks 0.75rem) -->
+                    <div class="relative flex items-center w-full h-[36px]">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 text-[#c5a880] text-xs pointer-events-none"></i>
+                        <input type="text" id="inputSearchCatalog" class="search-input-compact w-full h-[36px] pl-8 pr-8 text-[0.75rem]" placeholder="Cari mobil, Hiace, Elf, Bus, atau kota..." autocomplete="off">
+                        <button type="button" id="btnClearSearchCatalog" class="hidden absolute right-2.5 text-xs cursor-pointer" style="color: var(--text-muted);">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- BARIS 3 (Tinggi 30px): Deretan Pil Kategori Ramping (tinggi 28px, padding 0 11px, font 0.68rem) -->
+                    <div id="catalogCategoryTabs" class="filter-chips-scroll">
+                        <button type="button" class="filter-chip-btn active" data-cat-tab="ALL">Semua</button>
+                        <button type="button" class="filter-chip-btn" data-cat-tab="MPV">Keluarga</button>
+                        <button type="button" class="filter-chip-btn" data-cat-tab="City Car">City Car</button>
+                        <button type="button" class="filter-chip-btn" data-cat-tab="SUV">SUV</button>
+                        <button type="button" class="filter-chip-btn" data-cat-tab="Minibus">Hiace &amp; Elf</button>
+                        <button type="button" class="filter-chip-btn" data-cat-tab="Bus">Bus</button>
+                        <button type="button" class="filter-chip-btn" data-cat-tab="Luxury">VIP</button>
+                        <button type="button" class="filter-chip-btn" data-cat-tab="EV">Listrik</button>
+                    </div>
+
+                    <!-- PANEL FILTER KOMBINASI LIPAT KOMPAK (#collapsibleFilterPanel) -->
+                    <div id="collapsibleFilterPanel" class="hidden collapsible-filter-box space-y-2.5 mt-1">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <!-- Mode Sewa -->
+                            <div>
+                                <span class="block text-[0.58rem] font-extrabold uppercase tracking-wider text-[#c5a880] mb-1">Mode Sewa</span>
+                                <div id="filterGroupService" class="grid grid-cols-3 gap-1">
+                                    <button type="button" data-flt-srv="ALL" class="combo-pill-btn active">Semua</button>
+                                    <button type="button" data-flt-srv="LEPAS_KUNCI" class="combo-pill-btn">Lepas Kunci</button>
+                                    <button type="button" data-flt-srv="DENGAN_SOPIR" class="combo-pill-btn">Dengan Sopir</button>
+                                </div>
+                            </div>
+
+                            <!-- Transmisi (Matic / Manual) -->
+                            <div>
+                                <span class="block text-[0.58rem] font-extrabold uppercase tracking-wider text-[#c5a880] mb-1">Transmisi</span>
+                                <div id="filterGroupTrans" class="grid grid-cols-3 gap-1">
+                                    <button type="button" data-flt-trans="ALL" class="combo-pill-btn active">Semua</button>
+                                    <button type="button" data-flt-trans="A" class="combo-pill-btn">Matic</button>
+                                    <button type="button" data-flt-trans="M" class="combo-pill-btn">Manual</button>
+                                </div>
+                            </div>
+
+                            <!-- Urutan -->
+                            <div>
+                                <span class="block text-[0.58rem] font-extrabold uppercase tracking-wider text-[#c5a880] mb-1">Urutkan</span>
+                                <div id="filterGroupSort" class="grid grid-cols-3 gap-1">
+                                    <button type="button" data-flt-sort="NEAREST" class="combo-pill-btn active">Terdekat</button>
+                                    <button type="button" data-flt-sort="CHEAPEST" class="combo-pill-btn">Termurah</button>
+                                    <button type="button" data-flt-sort="NEWEST" class="combo-pill-btn">Terbaru</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1.5 border-t" style="border-color: var(--border-subtle);">
+                            <span id="filterSummaryActiveText" class="text-[0.6rem]" style="color: var(--text-muted);">Diurutkan mulai dari garasi terdekat di sekitar Anda.</span>
+                            <button type="button" id="btnResetComboFilters" class="text-[0.6rem] font-extrabold uppercase tracking-wider text-[#c5a880] hover:underline cursor-pointer">
+                                Reset Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Baris Indikator Jumlah Armada & Tombol Lebarkan/Ringkas Semua -->
+            <div class="max-w-5xl mx-auto px-3.5 pt-2.5 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span id="headerAvailableUnitsCount" class="font-display text-xs sm:text-sm font-extrabold" style="color: var(--text-main);">Memuat Armada...</span>
+                    <span class="text-[0.62rem] hidden sm:inline" style="color: var(--text-muted);">• Sentuh kartu untuk melihat galeri foto/video &amp; rincian paket</span>
+                </div>
+                <button type="button" id="btnToggleExpandAllPublic" class="h-[28px] px-2.5 rounded-lg border text-[#c5a880] text-[0.6rem] font-extrabold uppercase tracking-wider flex items-center gap-1 cursor-pointer shrink-0 transition-all" style="background: var(--bg-subtle); border-color: var(--border-gold);">
+                    <i id="iconExpandAllPublic" class="fa-solid fa-angles-down text-[0.58rem]"></i>
+                    <span id="labelExpandAllPublic">Lebarkan Semua</span>
+                </button>
+            </div>
+
+            <!-- Daftar Kartu Unit Mobil (Accordion Cards + Virtualized Chunk Sentinel) -->
+            <div class="max-w-5xl mx-auto px-3.5 pt-2">
+                <!-- State Kosong / Tidak Ditemukan -->
+                <div id="catalogEmptyState" class="hidden rounded-2xl border border-dashed border-[#c5a880]/40 p-7 text-center my-3" style="background: var(--card-bg-1);">
+                    <div class="w-14 h-14 rounded-2xl bg-[#c5a880]/15 border border-[#c5a880]/35 flex items-center justify-center text-[#c5a880] text-xl mx-auto mb-2.5">
+                        <i class="fa-solid fa-car-on"></i>
+                    </div>
+                    <h3 id="catalogEmptyTitle" class="font-display font-bold text-sm sm:text-base mb-1" style="color: var(--text-main);">Belum Ada Armada Tersedia</h3>
+                    <p id="catalogEmptyDesc" class="text-xs max-w-md mx-auto leading-relaxed mb-3.5" style="color: var(--text-muted);">
+                        Saat ini belum ada unit kendaraan yang sesuai dengan kriteria pencarian atau filter Anda.
+                    </p>
+                    <button type="button" id="btnResetFilterEmpty" class="px-4 py-2 rounded-xl bg-[#c5a880]/20 border border-[#c5a880] text-[#c5a880] text-xs font-extrabold uppercase tracking-wider cursor-pointer">
+                        Tampilkan Semua Armada
+                    </button>
+                </div>
+
+                <!-- Grid Kartu Katalog Buka-Tutup -->
+                <div id="rentalCatalogGrid" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 items-start"></div>
+
+                <!-- Pemantau Gulir Otomatis (IntersectionObserver Sentinel untuk Skala 100.000+ Unit) -->
+                <div id="catalogScrollSentinel" class="hidden py-4 text-center"></div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 2: PUSAT INFORMASI (#view-info)
+             ================================================================= -->
+        <section id="view-info" class="spa-tab-view hidden">
+            <div class="max-w-3xl mx-auto px-4 pt-4 space-y-3.5">
+                <div class="rounded-2xl p-4 border border-[#c5a880]/35 flex items-center gap-3" style="background: var(--card-bg-1);">
+                    <div class="w-11 h-11 rounded-2xl bg-[#c5a880]/15 border border-[#c5a880]/45 flex items-center justify-center text-[#c5a880] text-lg shrink-0">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <span class="text-[0.58rem] font-extrabold uppercase tracking-[0.16em] text-[#c5a880]">PUSAT INFORMASI RESMI</span>
+                        <h2 class="font-display font-bold text-base sm:text-lg leading-tight" style="color: var(--text-main);">Layanan Rental Mobil Bagantara</h2>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Transparan, Tanpa Komisi Perantara, &amp; Terhubung Langsung ke Garasi Resmi</p>
+                    </div>
+                </div>
+
+                <!-- Konten Pusat Informasi dari Encrypted Vault -->
+                <div id="infoCenterVaultContainer" class="space-y-3"></div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 3: SETELAN PERANGKAT (#view-settings)
+             ================================================================= -->
+        <section id="view-settings" class="spa-tab-view hidden">
+            <div class="max-w-xl mx-auto px-4 pt-4 space-y-3.5">
+                <div class="rounded-2xl p-4 border border-[#c5a880]/35 flex items-center justify-between gap-3" style="background: var(--card-bg-1);">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#c5a880]/15 border border-[#c5a880]/45 flex items-center justify-center text-[#c5a880] text-base shrink-0">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <div>
+                            <span class="text-[0.58rem] font-extrabold uppercase tracking-[0.16em] text-[#c5a880]">PREFERENSI PENGGUNA</span>
+                            <h2 class="font-display font-bold text-sm sm:text-base leading-tight" style="color: var(--text-main);">Setelan Perangkat &amp; Tampilan</h2>
+                        </div>
+                    </div>
+                    <span class="text-[0.58rem] font-bold px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/35">Aktif</span>
+                </div>
+
+                <!-- Pilihan Mode Tema: Otomatis / Malam / Siang -->
+                <div class="rounded-2xl p-4 border space-y-2.5" style="background: var(--card-bg-1); border-color: var(--border-subtle);">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-display font-bold text-sm" style="color: var(--text-main);">Tema Visual Aplikasi</h3>
+                            <p class="text-[0.66rem]" style="color: var(--text-muted);">Sesuaikan tampilan katalog dengan kenyamanan mata Anda</p>
+                        </div>
+                        <i class="fa-solid fa-palette text-[#c5a880]"></i>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" class="btn-theme-mode calc-option-pill active" data-theme-mode="auto">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Otomatis
+                        </button>
+                        <button type="button" class="btn-theme-mode calc-option-pill" data-theme-mode="dark">
+                            <i class="fa-solid fa-moon mr-1"></i> Malam
+                        </button>
+                        <button type="button" class="btn-theme-mode calc-option-pill" data-theme-mode="light">
+                            <i class="fa-solid fa-sun mr-1"></i> Siang
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Saklar Getar Haptic & Mode Hemat Baterai / Lite -->
+                <div class="rounded-2xl p-4 border space-y-3" style="background: var(--card-bg-1); border-color: var(--border-subtle);">
+                    <div class="flex items-center justify-between gap-3 border-b pb-2.5" style="border-color: var(--border-subtle);">
+                        <div>
+                            <h3 class="font-display font-bold text-sm" style="color: var(--text-main);">Getar Umpan Balik (Haptic)</h3>
+                            <p class="text-[0.66rem]" style="color: var(--text-muted);">Getaran lembut saat menekan tombol dan memilih paket sewa</p>
+                        </div>
+                        <input type="checkbox" id="toggleSettingHaptic" class="w-5 h-5 accent-[#c5a880] cursor-pointer" checked>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <h3 class="font-display font-bold text-sm" style="color: var(--text-main);">Mode Hemat Baterai / Ringan</h3>
+                            <p class="text-[0.66rem]" style="color: var(--text-muted);">Matikan efek transparan dan animasi untuk penghematan daya</p>
+                        </div>
+                        <input type="checkbox" id="toggleSettingLiteMode" class="w-5 h-5 accent-[#c5a880] cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Bersihkan Cache Katalog -->
+                <div class="rounded-2xl p-4 border space-y-2.5" style="background: var(--card-bg-1); border-color: var(--border-subtle);">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-display font-bold text-sm" style="color: var(--text-main);">Penyegaran Data Katalog</h3>
+                            <p class="text-[0.66rem]" style="color: var(--text-muted);">Bersihkan memori lokal dan muat ulang daftar kendaraan terbaru</p>
+                        </div>
+                        <i class="fa-solid fa-rotate text-emerald-400"></i>
+                    </div>
+                    <button type="button" id="btnClearCatalogCache" class="w-full py-2.5 px-4 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-400 text-xs font-extrabold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all">
+                        <i class="fa-solid fa-broom"></i>
+                        <span>Segarkan Penuh Data Katalog</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             NAVIGASI BAWAH 3-TAB (#mainBottomNav)
+             ================================================================= -->
+        <nav id="mainBottomNav" class="bottom-nav-bar" aria-label="Navigasi Utama">
+            <button type="button" class="bottom-nav-item active" data-tab-target="view-catalog">
+                <i class="fa-solid fa-car-side"></i>
+                <span>Katalog Rental</span>
+            </button>
+            <button type="button" class="bottom-nav-item" data-tab-target="view-info">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Pusat Informasi</span>
+            </button>
+            <button type="button" class="bottom-nav-item" data-tab-target="view-settings">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Setelan Perangkat</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- =====================================================================
+         TEMPLATE KARTU KATALOG BUKA-TUTUP KOMPAK (#tpl-rental-unit-card)
+         ===================================================================== -->
+    <template id="tpl-rental-unit-card">
+        <article class="rental-unit-card">
+            <!-- 1. TAMPILAN RINGKAS (DEFAULT TERTUTUP) -->
+            <div class="unit-card-compact-row">
+                <!-- Kiri: Foto Thumbnail 84x62px dengan .photo-armor-shield & Badge Tahun -->
+                <div class="protected-photo-container w-[84px] h-[62px] rounded-xl border border-[#c5a880]/35 shrink-0" style="background: var(--bg-subtle);" oncontextmenu="return false;">
+                    <img class="tpl-unit-thumb protected-photo-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" referrerpolicy="no-referrer" alt="Armada Rental" draggable="false">
+                    <div class="photo-armor-shield" oncontextmenu="return false;"></div>
+                    <span class="tpl-badge-year font-mono-num text-[0.5rem] font-extrabold px-1.5 py-0.2 rounded bg-black/80 text-[#c5a880] border border-[#c5a880]/40 absolute bottom-1 left-1 z-10">2023</span>
+                </div>
+
+                <!-- Tengah: Nama Lengkap Mobil (0.88rem), Spesifikasi Bersih, & Baris Bawah Harga + Media/Lokasi -->
+                <div class="flex flex-col min-w-0 flex-1">
+                    <div class="flex items-center gap-1.5">
+                        <h3 class="tpl-car-fullname font-display font-bold text-[0.88rem] leading-snug truncate" style="color: var(--text-main);">Toyota All New Avanza</h3>
+                        <span class="tpl-nearest-badge hidden text-[0.5rem] font-black px-1.5 py-0.2 rounded bg-gradient-to-r from-[#e5c687] to-[#c5a880] text-[#030712] uppercase tracking-wider shrink-0">
+                            Terdekat
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                        <p class="tpl-compact-specs text-[0.63rem] truncate" style="color: var(--text-sub);">
+                            Matic • 7 Kursi • Lepas Kunci
+                        </p>
+                        <span class="tpl-media-badge hidden text-[0.52rem] font-extrabold px-1.5 py-0.2 rounded bg-[#c5a880]/15 text-[#c5a880] border border-[#c5a880]/35 shrink-0">
+                            📷 Foto
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 mt-1">
+                        <span class="tpl-price-24h-compact font-mono-num text-xs font-black text-emerald-400 whitespace-nowrap">Rp 350.000 <span class="text-[0.56rem] font-normal" style="color: var(--text-muted);">/ 24 jam</span></span>
+                        <span class="tpl-distance-badge text-[0.58rem] font-bold text-[#c5a880] truncate">
+                            📍 Sekitar 2.1 km
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Kanan: Tombol Chevron 28x28px (.btn-expand-unit-drawer) -->
+                <button type="button" class="btn-expand-unit-drawer shrink-0" title="Buka / Tutup Rincian">
+                    <i class="fa-solid fa-chevron-down text-[0.65rem] pointer-events-none"></i>
+                </button>
+            </div>
+
+            <!-- 2. TAMPILAN LACI EKSPANSI (TERBUKA SAAT KARTU DIKLIK) -->
+            <div class="unit-card-drawer hidden">
+                <!-- PANGGUNG GALERI BERDIMENSI KUNCI (.bgn-media-stage-box: 215px, Zero Overlap) -->
+                <div class="bgn-media-stage-box mb-2" oncontextmenu="return false;">
+                    <div class="bgn-stage-media-layer absolute inset-0 w-full h-full"></div>
+
+                    <div class="absolute top-2 left-2 z-10 flex items-center gap-1.5 pointer-events-none">
+                        <span class="tpl-drawer-cat text-[0.56rem] font-extrabold px-2 py-0.5 rounded-lg bg-black/80 text-[#c5a880] border border-[#c5a880]/45">Mobil Keluarga • 7 Kursi</span>
+                        <span class="tpl-drawer-fuel text-[0.56rem] font-bold px-2 py-0.5 rounded-lg bg-black/80 text-white border border-white/15">Bensin</span>
+                    </div>
+
+                    <div class="absolute top-2 right-2 z-10 pointer-events-none">
+                        <span class="tpl-drawer-inc text-[0.56rem] font-extrabold px-2 py-0.5 rounded-lg bg-emerald-500/90 text-[#030712]">Unit Mobil Saja</span>
+                    </div>
+
+                    <!-- Pita Promo Garasi -->
+                    <div class="tpl-promo-ribbon hidden absolute bottom-0 inset-x-0 z-10 bg-gradient-to-r from-emerald-600/95 via-emerald-500/95 to-teal-600/95 text-[#030712] px-3 py-1 text-[0.6rem] font-extrabold uppercase tracking-wider flex items-center gap-1.5 pointer-events-none">
+                        <i class="fa-solid fa-tags"></i>
+                        <span class="tpl-promo-text truncate">Promo Spesial</span>
+                    </div>
+                </div>
+
+                <!-- Baris Pil Pemilih Media (Maks 2 Foto + 1 Video Opsional) -->
+                <div class="bgn-media-slot-switcher hidden mb-2.5"></div>
+
+                <!-- Kotak Teks Review & Detail Interior Lengkap (.tpl-drawer-note-box) -->
+                <div class="tpl-drawer-note-box hidden rounded-xl px-3 py-2 mb-2.5 border" style="background: var(--bg-subtle); border-color: var(--border-subtle);">
+                    <div class="flex items-center gap-1.5 mb-1">
+                        <i class="fa-solid fa-sparkles text-[#c5a880] text-[0.62rem]"></i>
+                        <span class="text-[0.56rem] font-extrabold uppercase tracking-wider text-[#c5a880]">Review Kondisi, Interior &amp; Keunggulan Unit</span>
+                    </div>
+                    <p class="tpl-drawer-note text-[0.65rem] leading-relaxed" style="color: var(--text-sub);"></p>
+                </div>
+
+                <!-- Grid Paket Waktu Sewa Dinamis (.tpl-dynamic-packages-grid — Hanya Paket ON!) -->
+                <div class="tpl-dynamic-packages-grid grid grid-cols-2 sm:grid-cols-3 gap-1.5 mb-2"></div>
+
+                <!-- Info Tarif Sopir & Wilayah Luar Kota -->
+                <div class="flex items-center justify-between gap-2 flex-wrap text-[0.6rem] rounded-xl px-2.5 py-1.5 border mb-2" style="background: var(--bg-subtle); border-color: var(--border-subtle); color: var(--text-sub);">
+                    <span>Jasa Sopir: <b class="tpl-drawer-driver font-mono-num" style="color: var(--text-main);">+Rp 150.000/hr</b></span>
+                    <span>Wilayah Luar Kota: <b class="tpl-drawer-outtown font-mono-num" style="color: var(--text-main);">+Rp 50.000/hr</b></span>
+                </div>
+
+                <!-- Kotak Informasi Garasi -->
+                <div class="rounded-xl p-2.5 border mb-2.5" style="background: var(--bg-subtle); border-color: var(--border-subtle);">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="tpl-garage-name font-display font-bold text-xs text-[#c5a880] truncate">Nama Usaha Rental</div>
+                            <div class="tpl-garage-area text-[0.6rem] truncate" style="color: var(--text-sub);">Area Kecamatan</div>
+                            <div class="tpl-garage-hours text-[0.56rem] mt-0.5" style="color: var(--text-muted);"><i class="fa-regular fa-clock text-emerald-400 mr-1"></i>Jam Layanan: 07:00 - 22:00</div>
+                        </div>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="tpl-btn-gmaps btn-gmaps-capsule shrink-0">
+                            <span>📍 Lokasi Garasi</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tombol Utama Emas -->
+                <button type="button" class="tpl-btn-open-sheet btn-gold-cta w-full py-2.5 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>PILIH UNIT &amp; ATUR JADWAL SEWA</span>
+                </button>
+            </div>
+        </article>
+    </template>
+
+    <!-- =====================================================================
+         LEMBAR PEMESANAN 2 LANGKAH HALUS (#booking-sheet-overlay)
+         ===================================================================== -->
+    <div id="booking-sheet-overlay" class="sheet-backdrop hidden" role="dialog" aria-modal="true">
+        <div class="booking-bottom-sheet">
+            <!-- Header Sheet -->
+            <div class="px-4 py-3 border-b flex items-center justify-between gap-2.5 shrink-0" style="background: var(--card-bg-1); border-color: var(--border-subtle);">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-xl bg-[#c5a880]/15 border border-[#c5a880]/45 flex items-center justify-center text-[#c5a880] shrink-0">
+                        <i id="sheetStepHeaderIcon" class="fa-solid fa-calculator text-xs"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span id="sheetStepBadgeText" class="text-[0.52rem] font-extrabold uppercase tracking-widest text-emerald-400 block">LANGKAH 1 DARI 2 • ATUR JADWAL SEWA</span>
+                        <h3 id="sheetHeaderCarTitle" class="font-display font-bold text-sm sm:text-base truncate" style="color: var(--text-main);">Detail Armada Rental</h3>
+                    </div>
+                </div>
+                <button type="button" id="btnCloseBookingSheet" class="w-8 h-8 rounded-xl border flex items-center justify-center cursor-pointer shrink-0" style="background: var(--bg-subtle); border-color: var(--border-subtle); color: var(--text-sub);">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Area Scrollable -->
+            <div id="bookingSheetScrollBody" class="sheet-scroll-content space-y-3.5">
+
+                <!-- =========================================================
+                     LANGKAH 1: KALKULATOR & FORM DATA PENYEWA (#booking-step-1)
+                     ========================================================= -->
+                <div id="booking-step-1" class="space-y-3.5">
+                    <!-- Panggung Galeri Showroom & Ringkasan Unit di Langkah 1 -->
+                    <div class="rounded-2xl border p-3 space-y-2.5" style="background: var(--card-bg-2); border-color: var(--border-subtle);">
+                        <div id="sheetMediaStageBox" class="bgn-media-stage-box" oncontextmenu="return false;">
+                            <div class="bgn-stage-media-layer absolute inset-0 w-full h-full">
+                                <img id="sheetUnitPhoto" class="protected-photo-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" referrerpolicy="no-referrer" alt="Foto Unit" draggable="false">
+                                <div class="photo-armor-shield" oncontextmenu="return false;"></div>
+                            </div>
+                        </div>
+                        <div id="sheetMediaSlotSwitcher" class="bgn-media-slot-switcher hidden"></div>
+
+                        <div class="flex items-center justify-between gap-2 flex-wrap pt-0.5">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span id="sheetDistanceBadge" class="text-[0.56rem] font-extrabold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/35">📍 Sekitar 2.0 km</span>
+                                    <span id="sheetUnitSeatsBadge" class="text-[0.56rem] font-extrabold px-2 py-0.5 rounded bg-[#c5a880]/15 text-[#c5a880]">Mobil Keluarga • 7 Kursi</span>
+                                </div>
+                                <h4 id="sheetGarageName" class="font-display font-extrabold text-xs sm:text-sm text-[#c5a880] truncate mt-1">Nama Usaha Rental</h4>
+                                <p id="sheetUnitSpecsBadge" class="text-[0.62rem] truncate" style="color: var(--text-sub);">2023 • Matic • Bensin</p>
+                            </div>
+                        </div>
+
+                        <div id="sheetUnitNoteBox" class="hidden rounded-xl px-2.5 py-2 border text-[0.64rem] leading-relaxed" style="background: var(--bg-subtle); border-color: var(--border-subtle); color: var(--text-sub);">
+                            <span id="sheetUnitNoteText"></span>
+                        </div>
+                    </div>
+
+                    <!-- Ketentuan Garasi & Syarat Dokumen -->
+                    <div class="rounded-2xl border p-3.5 space-y-2.5" style="background: var(--card-bg-2); border-color: var(--border-subtle);">
+                        <div class="grid grid-cols-3 gap-1.5 text-center">
+                            <div class="rounded-xl p-2 border" style="background: var(--bg-subtle); border-color: var(--border-subtle);">
+                                <span class="block text-[0.5rem] font-bold uppercase" style="color: var(--text-muted);">JAM LAYANAN</span>
+                                <span id="sheetInfoHours" class="font-mono-num text-[0.64rem] font-extrabold text-emerald-400 mt-0.5 block">07:00 - 22:00</span>
+                            </div>
+                            <div class="rounded-xl p-2 border" style="background: var(--bg-subtle); border-color: var(--border-subtle);">
+                                <span class="block text-[0.5rem] font-bold uppercase" style="color: var(--text-muted);">OVERTIME</span>
+                                <span id="sheetInfoOvertime" class="font-mono-num text-[0.64rem] font-extrabold text-amber-400 mt-0.5 block">10% / Jam</span>
+                            </div>
+                            <div class="rounded-xl p-2 border" style="background: var(--bg-subtle); border-color: var(--border-subtle);">
+                                <span class="block text-[0.5rem] font-bold uppercase" style="color: var(--text-muted);">UANG MUKA</span>
+                                <span id="sheetInfoDpRule" class="font-mono-num text-[0.64rem] font-extrabold text-[#c5a880] mt-0.5 block">Tanpa DP</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="block text-[0.6rem] font-extrabold uppercase tracking-wider mb-1.5" style="color: var(--text-sub);">Persyaratan Penyewaan:</span>
+                            <ul id="sheetRequirementsList" class="space-y-1 text-xs" style="color: var(--text-sub);"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Kalkulator Opsi Sewa -->
+                    <div class="rounded-2xl border border-[#c5a880]/40 p-3.5 space-y-3" style="background: var(--card-bg-2);">
+                        <div class="border-b pb-2 flex items-center justify-between" style="border-color: var(--border-subtle);">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-[#c5a880] flex items-center gap-1.5">
+                                <i class="fa-solid fa-sliders"></i> Pilih Paket &amp; Jadwal Sewa
+                            </span>
+                        </div>
+
+                        <!-- 1. Pilihan Mode Sewa -->
+                        <div>
+                            <label class="block text-[0.64rem] font-bold uppercase tracking-wider mb-1" style="color: var(--text-sub);">1. Mode Layanan Sewa</label>
+                            <div class="flex gap-1.5">
+                                <button type="button" id="btnModeLepasKunci" class="calc-option-pill active" data-mode="LEPAS_KUNCI">
+                                    <i class="fa-solid fa-key mr-1"></i> Lepas Kunci
+                                </button>
+                                <button type="button" id="btnModeDenganSopir" class="calc-option-pill" data-mode="DENGAN_SOPIR">
+                                    <i class="fa-solid fa-user-tie mr-1"></i> Dengan Sopir
+                                </button>
+                            </div>
+                            <span id="hintDriverFeeInfo" class="block text-[0.6rem] mt-1" style="color: var(--text-muted);"></span>
+                        </div>
+
+                        <!-- 2. Pilihan 5 Paket Durasi Dinamis & Pengatur Jumlah (- / +) -->
+                        <div>
+                            <label class="block text-[0.64rem] font-bold uppercase tracking-wider mb-1" style="color: var(--text-sub);">2. Paket &amp; Durasi Waktu Sewa (Sesuai Layanan Garasi)</label>
+                            <div class="flex flex-wrap gap-1.5 mb-2">
+                                <button type="button" id="btnPkg6h" class="calc-option-pill hidden" data-pkg="6H">
+                                    Paket 6 Jam
+                                </button>
+                                <button type="button" id="btnPkg12h" class="calc-option-pill hidden" data-pkg="12H">
+                                    Paket 12 Jam
+                                </button>
+                                <button type="button" id="btnPkg24h" class="calc-option-pill active" data-pkg="24H">
+                                    Harian (24 Jam)
+                                </button>
+                                <button type="button" id="btnPkgWeekly" class="calc-option-pill hidden" data-pkg="WEEKLY">
+                                    Mingguan (7 Hr)
+                                </button>
+                                <button type="button" id="btnPkgMonthly" class="calc-option-pill hidden" data-pkg="MONTHLY">
+                                    Bulanan (30 Hr)
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between rounded-xl px-3 py-2 border" style="background: var(--bg-subtle); border-color: var(--border-subtle);">
+                                <span id="calcDurationUnitLabel" class="text-xs font-bold" style="color: var(--text-sub);">Jumlah Hari Sewa:</span>
+                                <div class="flex items-center gap-2.5">
+                                    <button type="button" id="btnDurMinus" class="w-7 h-7 rounded-lg border font-mono-num font-bold text-xs cursor-pointer" style="background: var(--card-bg-1); border-color: var(--border-subtle); color: var(--text-main);">-</button>
+                                    <span id="calcDurationQty" class="font-mono-num text-sm font-black text-[#c5a880] w-5 text-center">1</span>
+                                    <button type="button" id="btnDurPlus" class="w-7 h-7 rounded-lg border font-mono-num font-bold text-xs cursor-pointer" style="background: var(--card-bg-1); border-color: var(--border-subtle); color: var(--text-main);">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Pilihan Wilayah Pemakaian -->
+                        <div>
+                            <label class="block text-[0.64rem] font-bold uppercase tracking-wider mb-1" style="color: var(--text-sub);">3. Wilayah Pemakaian</label>
+                            <div class="flex gap-1.5">
+                                <button type="button" id="btnZoneInTown" class="calc-option-pill active" data-zone="IN_TOWN">
+                                    <i class="fa-solid fa-city mr-1"></i> Dalam Kota
+                                </button>
+                                <button type="button" id="btnZoneOutTown" class="calc-option-pill" data-zone="OUT_TOWN">
+                                    <i class="fa-solid fa-road mr-1"></i> Luar Kota
+                                </button>
+                            </div>
+                            <span id="hintOutTownFeeInfo" class="block text-[0.6rem] mt-1" style="color: var(--text-muted);"></span>
+                        </div>
+
+                        <!-- 4. Pilihan Metode Pengambilan Unit -->
+                        <div>
+                            <label class="block text-[0.64rem] font-bold uppercase tracking-wider mb-1" style="color: var(--text-sub);">4. Metode Serah Terima Unit</label>
+                            <div class="flex gap-1.5">
+                                <button type="button" id="btnPickupGarage" class="calc-option-pill active" data-pickup="GARAGE">
+                                    <i class="fa-solid fa-warehouse mr-1"></i> Ambil di Garasi
+                                </button>
+                                <button type="button" id="btnPickupDelivery" class="calc-option-pill" data-pickup="DELIVERY">
+                                    <i class="fa-solid fa-truck-fast mr-1"></i> Diantar ke Lokasi
+                                </button>
+                            </div>
+
+                            <div id="boxPickupGarageInfo" class="mt-2 flex items-center justify-between rounded-xl px-3 py-2 border text-[0.65rem]" style="background: var(--bg-subtle); border-color: var(--border-subtle);">
+                                <span style="color: var(--text-sub);">Ambil unit langsung di garasi:</span>
+                                <a id="linkCalcGarageGmaps" href="#" target="_blank" rel="noopener noreferrer" class="text-sky-400 font-extrabold underline">Buka Peta Garasi</a>
+                            </div>
+
+                            <div id="boxPickupDeliveryInput" class="hidden mt-2 space-y-1">
+                                <input type="text" id="calcDeliveryAddress" maxlength="180" class="calc-input text-xs" placeholder="Ketik alamat lengkap pengantaran atau tempel tautan peta lokasi Anda...">
+                                <p id="errDeliveryAddress" class="hidden text-[0.6rem] font-bold text-red-400"></p>
+                                <span id="hintDeliveryFeeInfo" class="block text-[0.6rem] text-emerald-400"></span>
+                            </div>
+                        </div>
+
+                        <!-- 5. Pemilih Tanggal & Jam Serah Terima Kustom Ramping (Anti-Mundur Sesuai Jam Perangkat) -->
+                        <div class="pt-2.5 border-t space-y-2.5" style="border-color: var(--border-subtle);">
+                            <input type="hidden" id="calcStartDate" value="">
+                            <input type="hidden" id="calcStartTime" value="08:00">
+
+                            <!-- Pemilih Tanggal Mulai Sewa -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1 flex-wrap gap-1">
+                                    <label class="text-[0.64rem] font-bold uppercase tracking-wider text-[#c5a880]">
+                                        <i class="fa-regular fa-calendar-days mr-1"></i>5. Tanggal Mulai Sewa
+                                    </label>
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" data-date-shortcut="0" class="btn-date-shortcut">Hari Ini</button>
+                                        <button type="button" data-date-shortcut="1" class="btn-date-shortcut active">Besok</button>
+                                        <button type="button" data-date-shortcut="2" class="btn-date-shortcut">Lusa</button>
+                                    </div>
+                                </div>
+                                <div id="customDateStrip30Days" class="custom-date-strip"></div>
+                                <div class="mt-1 flex items-center justify-between text-[0.6rem] px-0.5" style="color: var(--text-muted);">
+                                    <span>Tanggal Dipilih:</span>
+                                    <span id="customSelectedDateLabel" class="font-bold text-emerald-400">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Grid Pil Jam Pengambilan Unit -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="text-[0.64rem] font-bold uppercase tracking-wider text-[#c5a880]">
+                                        <i class="fa-regular fa-clock mr-1"></i>6. Jam Serah Terima (WIB)
+                                    </label>
+                                    <span id="customSelectedTimeLabel" class="font-mono-num text-xs font-extrabold text-emerald-400">08:00 WIB</span>
+                                </div>
+                                <div id="customTimePillsGrid" class="grid grid-cols-6 gap-1"></div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Identitas Penyewa -->
+                        <div class="pt-2.5 border-t space-y-2" style="border-color: var(--border-subtle);">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div id="wrapRenterName">
+                                    <label class="block text-[0.6rem] font-bold uppercase mb-1" style="color: var(--text-sub);">Nama Lengkap Penyewa *</label>
+                                    <input type="text" id="calcRenterName" maxlength="60" class="calc-input text-xs" placeholder="Nama lengkap sesuai E-KTP">
+                                    <p id="errRenterName" class="hidden text-[0.6rem] font-bold text-red-400 mt-1">
+                                        <i class="fa-solid fa-circle-exclamation mr-1"></i>Mohon isi Nama Lengkap Penyewa sesuai E-KTP.
+                                    </p>
+                                </div>
+                                <div id="wrapRenterCity">
+                                    <label class="block text-[0.6rem] font-bold uppercase mb-1" style="color: var(--text-sub);">Kota Domisili Penyewa *</label>
+                                    <input type="text" id="calcRenterCity" maxlength="50" class="calc-input text-xs" placeholder="Contoh: Kota Malang / Kediri">
+                                    <p id="errRenterCity" class="hidden text-[0.6rem] font-bold text-red-400 mt-1">
+                                        <i class="fa-solid fa-circle-exclamation mr-1"></i>Mohon isi Kota Domisili Anda saat ini.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[0.6rem] font-bold uppercase mb-1" style="color: var(--text-sub);">Catatan Tambahan (Opsional)</label>
+                                <input type="text" id="calcRenterNotes" maxlength="120" class="calc-input text-xs" placeholder="Contoh: Rencana perjalanan keluarga / jemput di stasiun">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kotak Rincian Harga & Nominal Wajib DP -->
+                    <div class="rounded-2xl border-2 border-[#c5a880]/55 p-3.5 space-y-2" style="background: var(--bg-subtle);">
+                        <div class="flex items-center justify-between border-b pb-1.5" style="border-color: var(--border-subtle);">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-[#c5a880]">Rincian Estimasi Biaya Sewa</span>
+                            <span id="summaryPackageBadge" class="font-mono-num text-[0.58rem] font-bold px-2 py-0.5 rounded bg-[#c5a880]/15 text-[#c5a880]">HARIAN</span>
+                        </div>
+
+                        <div class="space-y-1 text-xs">
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-muted);">Biaya Sewa Unit Pokok</span>
+                                <span id="summaryBaseCost" class="font-mono-num font-bold" style="color: var(--text-main);">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-muted);">Biaya Jasa Sopir</span>
+                                <span id="summaryDriverCost" class="font-mono-num font-bold" style="color: var(--text-main);">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-muted);">Tambahan Wilayah Luar Kota</span>
+                                <span id="summaryOutOfTownCost" class="font-mono-num font-bold" style="color: var(--text-main);">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-muted);">Biaya Antar-Jemput Unit</span>
+                                <span id="summaryDeliveryCost" class="font-mono-num font-bold" style="color: var(--text-main);">Rp 0</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t flex items-baseline justify-between" style="border-color: var(--border-subtle);">
+                            <span class="font-display font-extrabold text-xs uppercase tracking-wider" style="color: var(--text-main);">TOTAL ESTIMASI SEWA</span>
+                            <span id="summaryTotalCost" class="font-mono-num text-base sm:text-lg font-black text-emerald-400">Rp 0</span>
+                        </div>
+
+                        <div class="rounded-xl p-2.5 bg-[#c5a880]/15 border border-[#c5a880]/45 flex items-center justify-between gap-2">
+                            <div>
+                                <span class="block text-[0.56rem] font-extrabold uppercase tracking-wider text-[#c5a880]">NOMINAL WAJIB DP (TANDA JADI)</span>
+                                <span id="summaryDpRuleLabel" class="text-[0.62rem]" style="color: var(--text-sub);">Bayar Saat Serah Terima Unit</span>
+                            </div>
+                            <span id="summaryDpAmount" class="font-mono-num text-sm font-black text-[#c5a880] shrink-0">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Lanjut ke Langkah 2 -->
+                    <button type="button" id="btnProceedToStep2" class="btn-gold-cta w-full py-3.5 text-xs flex items-center justify-center gap-2 shadow-xl">
+                        <span>LANJUTKAN KE RINGKASAN &amp; PEMBAYARAN</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- =========================================================
+                     LANGKAH 2: GERBANG AKHIR PRA-WHATSAPP & QRIS RESMI GARASI
+                     (#booking-step-2)
+                     ========================================================= -->
+                <div id="booking-step-2" class="hidden space-y-3.5">
+                    <!-- Kartu Tiket Pesanan Resmi (#RNT-XXXXX) -->
+                    <div class="rounded-2xl border-2 border-[#c5a880] p-3.5 space-y-2.5 relative overflow-hidden" style="background: var(--bg-subtle);">
+                        <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-subtle);">
+                            <div>
+                                <span class="text-[0.54rem] font-extrabold uppercase tracking-widest text-emerald-400 block">TIKET PESANAN RESMI SIAP KIRIM</span>
+                                <h4 id="step2TicketCode" class="font-mono-num text-base font-black text-[#c5a880]">#RNT-XXXXX</h4>
+                            </div>
+                            <span id="step2DistanceBadge" class="text-[0.58rem] font-bold px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/35">📍 Lokasi Garasi</span>
+                        </div>
+
+                        <div class="space-y-1.5 text-xs">
+                            <div class="flex justify-between gap-2">
+                                <span style="color: var(--text-muted);">Garasi Tujuan:</span>
+                                <span id="step2GarageName" class="font-bold text-right" style="color: var(--text-main);">-</span>
+                            </div>
+                            <div class="flex justify-between gap-2">
+                                <span style="color: var(--text-muted);">Unit Kendaraan:</span>
+                                <span id="step2UnitName" class="font-bold text-right text-[#c5a880]">-</span>
+                            </div>
+                            <div class="flex justify-between gap-2">
+                                <span style="color: var(--text-muted);">Paket &amp; Layanan:</span>
+                                <span id="step2PkgAndMode" class="font-semibold text-right" style="color: var(--text-sub);">-</span>
+                            </div>
+                            <div class="flex justify-between gap-2">
+                                <span style="color: var(--text-muted);">Waktu Mulai Sewa:</span>
+                                <span id="step2ScheduleText" class="font-bold text-right text-emerald-400">-</span>
+                            </div>
+                            <div class="flex justify-between gap-2">
+                                <span style="color: var(--text-muted);">Metode Serah Terima:</span>
+                                <span id="step2PickupText" class="font-semibold text-right" style="color: var(--text-sub);">-</span>
+                            </div>
+                            <div class="flex justify-between gap-2">
+                                <span style="color: var(--text-muted);">Nama &amp; Domisili Penyewa:</span>
+                                <span id="step2RenterIdentity" class="font-bold text-right" style="color: var(--text-main);">-</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t grid grid-cols-2 gap-2" style="border-color: var(--border-subtle);">
+                            <div class="rounded-xl p-2 border" style="background: var(--card-bg-1); border-color: var(--border-subtle);">
+                                <span class="block text-[0.52rem] font-bold uppercase" style="color: var(--text-muted);">TOTAL ESTIMASI SEWA</span>
+                                <span id="step2TotalCost" class="font-mono-num text-sm font-black text-emerald-400 mt-0.5 block">Rp 0</span>
+                            </div>
+                            <div class="rounded-xl p-2 bg-[#c5a880]/15 border border-[#c5a880]/45">
+                                <span class="block text-[0.52rem] font-extrabold uppercase text-[#c5a880]">NOMINAL WAJIB DP</span>
+                                <span id="step2DpAmount" class="font-mono-num text-sm font-black text-[#c5a880] mt-0.5 block">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KOTAK TAMPILAN QRIS RESMI GARASI (HANYA MUNCUL DI LANGKAH 2 PRA-WHATSAPP) -->
+                    <div id="step2QrisContainer" class="hidden rounded-2xl border border-emerald-500/45 p-3.5 text-center space-y-2.5" style="background: var(--card-bg-2);">
+                        <div class="flex items-center justify-center gap-1.5 text-emerald-400">
+                            <i class="fa-solid fa-qrcode"></i>
+                            <span class="font-display font-extrabold text-xs uppercase tracking-wider">QRIS Resmi Pembayaran DP Garasi</span>
+                        </div>
+                        <p class="text-[0.65rem] leading-relaxed" style="color: var(--text-sub);">
+                            Pindai kode QRIS resmi <b id="step2QrisGarageLabel" class="text-[#c5a880]">Garasi</b> di bawah ini untuk pembayaran uang muka, lalu kirimkan tiket pesanan ke WhatsApp garasi:
+                        </p>
+
+                        <div class="protected-photo-container bg-white rounded-2xl p-2.5 border-2 border-[#c5a880] mx-auto max-w-[220px]" oncontextmenu="return false;">
+                            <img id="step2QrisImage" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" referrerpolicy="no-referrer" alt="QRIS Resmi Garasi" class="w-full h-auto object-contain max-h-[220px] mx-auto" draggable="false">
+                            <div class="photo-armor-shield" oncontextmenu="return false;"></div>
+                        </div>
+
+                        <span class="block text-[0.6rem]" style="color: var(--text-muted);">
+                            <i class="fa-solid fa-shield-halved text-[#c5a880] mr-1"></i>Lampirkan bukti pembayaran saat chat WhatsApp dengan admin garasi terbuka.
+                        </span>
+                    </div>
+
+                    <!-- Info Jika Garasi Tidak Mengatur QRIS -->
+                    <div id="step2NoQrisNotice" class="hidden rounded-2xl border p-3 text-xs flex items-center gap-2.5" style="background: var(--card-bg-2); border-color: var(--border-subtle); color: var(--text-sub);">
+                        <i class="fa-solid fa-circle-info text-[#c5a880] text-base shrink-0"></i>
+                        <span>Konfirmasi pembayaran uang muka dilakukan langsung melalui chat WhatsApp resmi garasi setelah Anda menekan tombol kirim di bawah.</span>
+                    </div>
+
+                    <!-- Tombol Kembali ke Langkah 1 & Tombol Akhir Kirim ke WhatsApp -->
+                    <div class="flex flex-col sm:flex-row gap-2 pt-0.5">
+                        <button type="button" id="btnBackToStep1" class="py-3 px-4 rounded-xl border text-xs font-extrabold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer" style="background: var(--bg-subtle); border-color: var(--border-subtle); color: var(--text-sub);">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Ubah Jadwal</span>
+                        </button>
+                        <button type="button" id="btnSubmitBookingWa" class="btn-gold-cta flex-1 py-3.5 text-xs flex items-center justify-center gap-2 shadow-xl">
+                            <i class="fa-brands fa-whatsapp text-base"></i>
+                            <span>KIRIM PESANAN KE WHATSAPP GARASI SEKARANG</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         PANEL MEDIA DINAMIS MENGAMBANG (#bgn-floating-media-viewer)
+         Hanya berisi Panel Dinamis Foto/Video (#bgn-floating-pinch-panel)
+         dengan Cubitan Jari (Pinch-to-Zoom) + Pil Media + Tombol Tutup!
+         ===================================================================== -->
+    <div id="bgn-floating-media-viewer" class="floating-media-overlay hidden" role="dialog" aria-modal="true">
+        <div class="floating-media-topbar">
+            <div id="floatingMediaSlotSwitcher" class="floating-media-pills-wrap hidden"></div>
+            <div class="flex items-center gap-1.5 ml-auto">
+                <button type="button" id="btnResetFloatingZoom" class="floating-zoom-reset-btn font-mono-num" title="Reset Ukuran 100%">100%</button>
+                <button type="button" id="btnCloseFloatingMedia" class="floating-close-btn" title="Tutup Panel Media">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span>Tutup</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="bgn-floating-stage-wrapper" class="floating-stage-wrapper">
+            <div id="bgn-floating-pinch-panel" class="floating-pinch-panel is-photo-mode" oncontextmenu="return false;">
+                <div id="bgn-floating-media-content" class="w-full h-full relative overflow-hidden"></div>
+                <div id="bgn-floating-pinch-shield" class="pinch-gesture-active-shield hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/bgn-rental-publik.min.js?v=2.3" defer></script>
+</body>
+</html>

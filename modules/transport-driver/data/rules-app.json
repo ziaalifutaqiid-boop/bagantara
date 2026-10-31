@@ -1,0 +1,107 @@
+{
+  "version": 12.2,
+  "system_controls": {
+    "maintenance_mode": false,
+    "force_refresh_cache": false,
+    "night_mode_start_hour": 18,
+    "night_mode_end_hour": 6,
+    "earth_radius_km": 6371,
+    "price_rounding_step": 100
+  },
+  "radar_mitra": {
+    "is_active": true,
+    "max_drivers_rendered": 10,
+    "polling_type": "manual",
+    "cooldown_refresh_sec": 20,
+    "warm_signal_threshold_minutes": 20,
+    "default_filter": "ALL"
+  },
+  "matchmaking": {
+    "max_scan_radius_km": 15.0,
+    "max_profile_reads": 15,
+    "enable_boost_zone": true,
+    "max_boost_amount": 5000,
+    "geohash_precision_level": 4,
+    "enable_boundary_neighbors": true,
+    "boundary_neighbor_offset_km": 4.0,
+    "rtdb_cache_ttl_sec": 60,
+    "rtdb_fetch_timeout_ms": 10000,
+    "max_offline_age_minutes": 5,
+    "max_wa_standby_hours": 12,
+    "default_min_tariff": 10000,
+    "wa_min_length": 10,
+    "wa_country_prefix": "62"
+  },
+  "data_optimization": {
+    "lazy_load_profile": true,
+    "profile_cache_ttl_minutes": 1440
+  },
+  "chat_controls": {
+    "media_feature_active": true,
+    "driver_response_timeout_ms": 180000,
+    "radar_poll_interval_ms": 4000,
+    "radar_fetch_timeout_ms": 5000,
+    "catalog_send_delay_ms": 1200,
+    "idle_disconnect_timeout_ms": 300000,
+    "media_upload_timeout_ms": 15000,
+    "image_max_width_px": 1200,
+    "image_jpeg_quality": 0.7,
+    "voice_max_duration_sec": 60,
+    "voice_lock_delta_y_px": -60,
+    "voice_cancel_delta_x_px": -50
+  },
+  "form_validation": {
+    "min_name_length": 3,
+    "min_wa_length": 10,
+    "min_search_query_length": 3,
+    "max_multi_stops": 3,
+    "subtitle_max_chars": 55
+  },
+  "map_and_routing": {
+    "search_lock_tolerance_km": 0.1,
+    "haversine_compensation_factor": 1.3,
+    "osrm_compensation_factor": 1.15,
+    "osrm_max_ratio_vs_haversine": 2.0,
+    "route_calc_debounce_ms": 350,
+    "fit_bounds_padding_px": 40,
+    "price_check_max_retries": 20,
+    "price_check_interval_ms": 500,
+    "search_debounce_ms": 900,
+    "gps_timeout_ms": 6000,
+    "gps_gatekeeper_timeout_ms": 10000,
+    "gps_max_age_ms": 60000
+  },
+  "geocoder_rules": {
+    "cache_ttl_days": 30,
+    "max_cache_entries": 80,
+    "reverse_cache_radius_km": 0.075,
+    "vault_dedup_radius_km": 0.03,
+    "recent_dedup_radius_km": 0.05,
+    "max_vault_places": 30,
+    "max_combined_recent_places": 10,
+    "max_recent_places": 6,
+    "local_bbox_delta_deg": 0.65,
+    "maptiler_search_timeout_ms": 4500,
+    "maptiler_reverse_timeout_ms": 4000,
+    "gas_unfurl_timeout_ms": 6500,
+    "indonesia_bbox": {
+      "min_lat": -11.2,
+      "max_lat": 6.2,
+      "min_lng": 94.8,
+      "max_lng": 141.2
+    },
+    "country_code": "ID"
+  },
+  "security": {
+    "bad_words": [
+      "anjing",
+      "bangsat",
+      "babi",
+      "kontol",
+      "memek",
+      "penipu",
+      "bajingan"
+    ],
+    "censored_replacement": "***"
+  }
+}

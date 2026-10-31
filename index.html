@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BAGANTARA — Super-App Transportasi Driver &amp; Katalog Rental Mobil</title>
+
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#070d1f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="./assets/icon-192.png">
+    <link rel="icon" type="image/png" href="./assets/icon-192.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/superapp-shell.css?v=14.0">
+</head>
+<body class="superapp-body" oncontextmenu="return false;">
+
+    <!-- =====================================================================
+         1. BILAH PINDAH LAYANAN ATAS (SUPER-APP TOP SERVICE SWITCHER)
+         ===================================================================== -->
+    <header id="superapp-top-header" class="superapp-top-header" role="banner">
+        <div class="superapp-header-inner">
+            <!-- Identitas Brand Terpadu -->
+            <div class="superapp-brand-box">
+                <img src="./assets/logo.png" alt="Logo Bagantara" class="superapp-brand-logo" draggable="false">
+                <div class="superapp-brand-meta">
+                    <span class="superapp-brand-title">BAGANTARA</span>
+                    <span id="superappGpsStatusBadge" class="superapp-gps-pill" title="Status Sinkronisasi Lokasi GPS Tunggal">
+                        <span class="superapp-gps-dot"></span>
+                        <span id="superappGpsStatusLabel">GPS Terpadu</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Saklar Pemilih Layanan Utama (Ojol vs Rental Mobil) -->
+            <nav class="superapp-service-switcher" role="tablist" aria-label="Pilih Layanan Bagantara">
+                <button
+                    type="button"
+                    id="btnSwitchTransportDriver"
+                    class="superapp-switch-tab active"
+                    data-service-target="transport-driver"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="frame-service-transport-driver"
+                >
+                    <i class="fa-solid fa-motorcycle"></i>
+                    <span class="switch-tab-text">Ojek, Taksi &amp; Jastip</span>
+                    <span id="badgeChatTabIndicator" class="switch-chat-live-dot hidden" title="Sesi Obrolan Driver Sedang Aktif"></span>
+                </button>
+
+                <button
+                    type="button"
+                    id="btnSwitchRentalMobil"
+                    class="superapp-switch-tab"
+                    data-service-target="rental-mobil"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="frame-service-rental-mobil"
+                >
+                    <i class="fa-solid fa-car-side"></i>
+                    <span class="switch-tab-text">Rental Mobil</span>
+                </button>
+            </nav>
+
+            <!-- Tombol Ganti Tema Cepat Siang / Malam Dua Arah -->
+            <div class="superapp-header-actions">
+                <button
+                    type="button"
+                    id="btnSuperAppThemeToggle"
+                    class="superapp-theme-btn"
+                    title="Ganti Tema Siang / Malam (Sinkron 2 Arah)"
+                    aria-label="Ganti Tema Siang atau Malam"
+                >
+                    <i id="iconSuperAppTheme" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         2. PITA NOTIFIKASI MENGAMBANG SESI OBROLAN LINTAS-LAYANAN
+            (#superapp-cross-chat-pill — Muncul di tab Rental Mobil saat Chat Driver Ojol Aktif)
+         ===================================================================== -->
+    <div id="superapp-cross-chat-pill" class="superapp-cross-chat-pill hidden" role="status" aria-live="polite">
+        <button type="button" id="btnReturnToDriverChat" class="cross-chat-pill-btn">
+            <span class="cross-chat-pulse-ring"></span>
+            <span id="crossChatPillText" class="cross-chat-pill-label">
+                💬 Sesi Obrolan Driver Aktif — Ketuk untuk Kembali ke Obrolan
+            </span>
+            <i class="fa-solid fa-arrow-right cross-chat-pill-arrow"></i>
+        </button>
+    </div>
+
+    <!-- =====================================================================
+         3. PANGGUNG FRAME LAYANAN TERISOLASI (#bgn-superapp-stage)
+            Keep-Alive: Frame tidak pernah di-reload/dihancurkan saat pindah tab!
+         ===================================================================== -->
+    <main id="bgn-superapp-stage" class="superapp-stage" role="main">
+        <!-- Frame Layanan 1: Transportasi Driver v13.2 (3 Node Firebase: bagantara-core, futaqi-ali, chatting-88040) -->
+        <iframe
+            id="frame-service-transport-driver"
+            class="superapp-service-frame active-frame"
+            src="./modules/transport-driver/index.html"
+            title="Layanan Transportasi Ojek, Taksi, Express &amp; Jastip Bagantara"
+            allow="geolocation; microphone; camera; clipboard-read; clipboard-write; fullscreen"
+            loading="eager"
+        ></iframe>
+
+        <!-- Frame Layanan 2: Katalog Rental Mobil v2.3 (2 Node Firebase: bagantara-history, bagantara-overflow) -->
+        <iframe
+            id="frame-service-rental-mobil"
+            class="superapp-service-frame hidden-frame"
+            data-lazy-src="./modules/rental-mobil/index.html"
+            src="./modules/rental-mobil/index.html"
+            title="Katalog Penyewaan Mobil Lepas Kunci &amp; Dengan Sopir Bagantara"
+            allow="geolocation; fullscreen; autoplay; encrypted-media; picture-in-picture"
+            loading="eager"
+        ></iframe>
+    </main>
+
+    <!-- Mesin Orkestrator Induk (BagantaraHostBridge) -->
+    <script src="./js/superapp-shell.min.js?v=14.0" defer></script>
+</body>
+</html>

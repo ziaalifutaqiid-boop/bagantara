@@ -1,0 +1,1106 @@
+/* ==========================================================================
+   FILE: css/theme-rental-publik.css (BAGANTARA RENTAL PUBLIK)
+   TEMA VISUAL: Futuristic Luxury Automotive Showroom,
+                Panggung Galeri Berdimensi Kunci (.bgn-media-stage-box 215px,
+                contain: layout paint, Zero Overlap & Anti-Crash),
+                Panel Media Dinamis Mengambang (#bgn-floating-media-viewer) dengan
+                Cubitan Jari (Pinch-to-Zoom) + Tombol Tutup,
+                Slot Jam & Tanggal Anti-Mundur (.time-slot-disabled, .date-card-expired),
+                Perisai In-App Video (.inapp-video-shield) & Gambar (.photo-armor-shield),
+                serta Kunci Kontras 100% Mode Malam (:root) & Mode Siang (body.light-mode).
+   ========================================================================== */
+:root {
+    --void-black: #070d1f;
+    --navy-base: #0d1630;
+    --hud-bg: rgba(13, 22, 48, 0.96);
+    --card-bg-1: #0d1630;
+    --card-bg-2: #111c3a;
+    --bg-subtle: #050914;
+    --luxury-gold: #c5a880;
+    --luxury-gold-bright: #e5c687;
+    --luxury-gold-dark: #9c7a44;
+    --luxury-gold-soft: rgba(197, 168, 128, 0.15);
+    --emerald-main: #10b981;
+    --emerald-bright: #34d399;
+    --emerald-soft: rgba(16, 185, 129, 0.14);
+    --amber-main: #f59e0b;
+    --amber-soft: rgba(245, 158, 11, 0.15);
+    --danger-main: #ef4444;
+    --border-subtle: rgba(255, 255, 255, 0.1);
+    --border-gold: rgba(197, 168, 128, 0.34);
+    --text-main: #f8fafc;
+    --text-sub: #cbd5e1;
+    --text-muted: #94a3b8;
+}
+
+body.light-mode {
+    --void-black: #f1f5f9;
+    --navy-base: #e2e8f0;
+    --hud-bg: rgba(255, 255, 255, 0.97);
+    --card-bg-1: #ffffff;
+    --card-bg-2: #ffffff;
+    --bg-subtle: #f8fafc;
+    --luxury-gold: #85581A;
+    --luxury-gold-bright: #b47d1c;
+    --luxury-gold-dark: #6b4512;
+    --luxury-gold-soft: rgba(133, 88, 26, 0.12);
+    --emerald-main: #047857;
+    --emerald-bright: #059669;
+    --emerald-soft: rgba(4, 120, 87, 0.12);
+    --amber-main: #b45309;
+    --amber-soft: rgba(180, 83, 9, 0.14);
+    --danger-main: #dc2626;
+    --border-subtle: #cbd5e1;
+    --border-gold: #d4af37;
+    --text-main: #0f172a;
+    --text-sub: #334155;
+    --text-muted: #475569;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--void-black);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow: hidden;
+}
+
+.font-display {
+    font-family: 'Outfit', sans-serif;
+}
+
+.font-mono-num {
+    font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-variant-numeric: tabular-nums !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* HILANGKAN SPINNER INPUT NUMBER */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* ==========================================================================
+   1. LAYAR IZIN LOKASI PERANGKAT (#gps-mandatory-lock-overlay)
+   ========================================================================== */
+.gps-lock-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: radial-gradient(circle at 50% 25%, var(--navy-base) 0%, var(--void-black) 75%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    overflow-y: auto;
+}
+
+.gps-lock-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--card-bg-1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid var(--border-gold);
+    border-radius: 24px;
+    padding: 24px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.55);
+}
+body.light-mode .gps-lock-card {
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.12);
+}
+
+.gps-loc-ring-wrap {
+    position: relative;
+    width: 78px;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.gps-loc-pulse-1,
+.gps-loc-pulse-2 {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(197, 168, 128, 0.42);
+    animation: locPulseRing 2.6s infinite ease-out;
+}
+.gps-loc-pulse-2 {
+    animation-delay: 1.3s;
+    border-color: rgba(16, 185, 129, 0.42);
+}
+
+@keyframes locPulseRing {
+    0% { transform: scale(0.75); opacity: 0.9; }
+    100% { transform: scale(1.36); opacity: 0; }
+}
+
+.gps-loc-core {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--luxury-gold);
+    box-shadow: 0 0 20px rgba(197, 168, 128, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+/* KONTAINER SPA & PANDANGAN 3-TAB */
+.app-shell {
+    width: 100vw;
+    height: 100dvh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--void-black);
+}
+
+.spa-tab-view {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: 84px;
+}
+
+/* ==========================================================================
+   2. PANGGUNG GALERI BERDIMENSI KUNCI (.bgn-media-stage-box) & PERISAI IN-APP
+   ========================================================================== */
+.bgn-media-stage-box {
+    position: relative;
+    width: 100%;
+    height: 215px;
+    border-radius: 14px;
+    overflow: hidden;
+    contain: layout paint;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.bgn-media-slot-switcher {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow-x: auto;
+    padding: 2px 0;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.bgn-media-slot-switcher::-webkit-scrollbar {
+    display: none;
+}
+
+.bgn-media-slot-pill {
+    flex-shrink: 0;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-sub);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.16s ease;
+}
+.bgn-media-slot-pill.active {
+    background: linear-gradient(135deg, var(--luxury-gold-bright) 0%, var(--luxury-gold) 100%);
+    border-color: var(--luxury-gold-bright);
+    color: #030712;
+    box-shadow: 0 2px 8px rgba(197, 168, 128, 0.25);
+}
+body.light-mode .bgn-media-slot-pill.active {
+    background: linear-gradient(135deg, #b47d1c 0%, #85581A 100%);
+    color: #ffffff;
+}
+
+/* PERISAI PELINDUNG IN-APP VIDEO (.inapp-video-shield) */
+.inapp-video-shield {
+    position: absolute;
+    z-index: 22;
+    background: rgba(0, 0, 0, 0.001);
+    user-select: none;
+    -webkit-user-select: none;
+}
+.inapp-shield-top {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+}
+.inapp-shield-corner {
+    bottom: 0;
+    right: 0;
+    width: 110px;
+    height: 44px;
+}
+
+/* PERISAI ANTI-KLIK KANAN & ANTI-UNDUH GAMBAR (.photo-armor-shield) */
+.protected-photo-container {
+    position: relative !important;
+    overflow: hidden !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
+}
+
+.protected-photo-img {
+    pointer-events: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-armor-shield {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 8 !important;
+    background: rgba(0, 0, 0, 0.001) !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
+}
+
+/* ==========================================================================
+   2B. PANEL MEDIA DINAMIS MENGAMBANG (#bgn-floating-media-viewer) DENGAN
+       CUBITAN JARI (PINCH-TO-ZOOM) & TOMBOL TUTUP
+   ========================================================================== */
+.floating-media-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100200;
+    background: rgba(3, 7, 18, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    touch-action: none;
+    animation: fadeBackdrop 0.18s ease;
+}
+
+.floating-media-topbar {
+    position: relative;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(7, 13, 31, 0.88);
+    border-bottom: 1px solid rgba(197, 168, 128, 0.32);
+    flex-shrink: 0;
+}
+body.light-mode .floating-media-topbar {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom-color: #cbd5e1;
+}
+
+.floating-media-pills-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.floating-media-pills-wrap::-webkit-scrollbar {
+    display: none;
+}
+
+.floating-media-pill {
+    height: 30px;
+    padding: 0 11px;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    color: #f8fafc;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.16s ease;
+}
+.floating-media-pill.active {
+    background: linear-gradient(135deg, #e5c687 0%, #c5a880 100%);
+    border-color: #f3e5ab;
+    color: #030712;
+}
+body.light-mode .floating-media-pill {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+body.light-mode .floating-media-pill.active {
+    background: linear-gradient(135deg, #b47d1c 0%, #85581A 100%);
+    border-color: #85581A;
+    color: #ffffff;
+}
+
+.floating-zoom-reset-btn {
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 9px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    background: rgba(197, 168, 128, 0.16);
+    border: 1px solid rgba(197, 168, 128, 0.45);
+    color: #f3e5ab;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+.floating-zoom-reset-btn.is-zoomed {
+    background: rgba(16, 185, 129, 0.22);
+    border-color: #10b981;
+    color: #34d399;
+}
+body.light-mode .floating-zoom-reset-btn {
+    background: #fef3c7;
+    border-color: #b45309;
+    color: #78350f;
+}
+
+.floating-close-btn {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 9px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    border: 1px solid #f87171;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+.floating-close-btn:active {
+    transform: scale(0.95);
+}
+
+.floating-stage-wrapper {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    overflow: hidden;
+    position: relative;
+    touch-action: none;
+}
+
+.floating-pinch-panel {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    height: 68dvh;
+    max-height: 620px;
+    background: #000000;
+    border: 2px solid var(--luxury-gold);
+    border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+    transform-origin: center center;
+    will-change: transform;
+    touch-action: none;
+}
+.floating-pinch-panel.is-video-mode {
+    max-width: 390px;
+    height: 74dvh;
+    max-height: 680px;
+}
+
+.pinch-gesture-active-shield {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    background: rgba(0, 0, 0, 0.01);
+    touch-action: none;
+}
+
+/* GRID PAKET WAKTU SEWA DINAMIS (.tpl-dynamic-packages-grid) */
+.pkg-dynamic-cell {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: 11px;
+    padding: 7px 9px;
+    display: flex;
+    flex-direction: column;
+}
+.pkg-dynamic-cell.pkg-cell-highlight {
+    border-color: var(--border-gold);
+    background: var(--luxury-gold-soft);
+}
+
+/* ==========================================================================
+   3. HEADER BERANDA SUPER RINGKAS (Total Tinggi <= 115px)
+   ========================================================================== */
+.catalog-top-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--hud-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-gold);
+    padding: 6px 12px;
+}
+body.light-mode .catalog-top-header {
+    border-bottom-color: #cbd5e1;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+}
+
+.live-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--emerald-main);
+    box-shadow: 0 0 8px var(--emerald-main);
+    animation: liveDotBlink 2s infinite ease-in-out;
+}
+
+@keyframes liveDotBlink {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.65; }
+}
+
+/* TOMBOL AKSI HEADER KOMPAK (Tinggi 32px, Padding 0 10px, Font 0.65rem) */
+.header-action-btn {
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 9px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-gold);
+    color: var(--luxury-gold);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+.header-action-btn:hover,
+.header-action-btn.active {
+    background: var(--luxury-gold-soft);
+    border-color: var(--luxury-gold-bright);
+}
+.header-action-btn:active {
+    transform: scale(0.96);
+}
+
+/* INPUT PENCARIAN BARIS 2 (Tinggi 36px, 100% Width, Font 0.75rem) */
+.search-input-compact {
+    border-radius: 10px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.18s ease;
+}
+.search-input-compact:focus {
+    border-color: var(--luxury-gold);
+}
+.search-input-compact::placeholder {
+    color: var(--text-muted);
+}
+
+/* BARIS 3: DERETAN PIL KATEGORI RAMPING (Tinggi 28px, Padding 0 11px, Font 0.68rem) */
+.filter-chips-scroll {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+    overflow-x: auto;
+    padding: 1px 0;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.filter-chips-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-chip-btn {
+    flex-shrink: 0;
+    height: 28px;
+    padding: 0 11px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    background: var(--bg-subtle);
+    color: var(--text-sub);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    transition: all 0.16s ease;
+}
+
+.filter-chip-btn.active {
+    background: linear-gradient(135deg, var(--luxury-gold-bright) 0%, var(--luxury-gold) 100%);
+    color: #030712;
+    border-color: var(--luxury-gold-bright);
+    box-shadow: 0 2px 8px rgba(197, 168, 128, 0.28);
+}
+
+body.light-mode .filter-chip-btn.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #b47d1c 0%, #85581A 100%);
+}
+
+/* PANEL FILTER KOMBINASI LIPAT KOMPAK (Tinggi Pil 30px, Font 0.68rem, Padding 4px 8px) */
+.collapsible-filter-box {
+    background: var(--card-bg-1);
+    border: 1px solid var(--border-gold);
+    border-radius: 14px;
+    padding: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+body.light-mode .collapsible-filter-box {
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.combo-pill-btn {
+    height: 30px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+}
+.combo-pill-btn.active {
+    background: linear-gradient(135deg, var(--luxury-gold-bright) 0%, var(--luxury-gold) 100%);
+    color: #030712;
+    border-color: var(--luxury-gold-bright);
+    font-weight: 800;
+}
+body.light-mode .combo-pill-btn.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #b47d1c 0%, #85581A 100%);
+}
+
+/* ==========================================================================
+   4. KARTU KATALOG BUKA-TUTUP KOMPAK (Thumbnail 84x62px, Chevron 28x28px)
+      + OPTIMASI CONTENT-VISIBILITY UNTUK SKALA 100.000+ UNIT
+   ========================================================================== */
+.rental-unit-card {
+    background: var(--card-bg-1);
+    border: 1px solid var(--border-gold);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.rental-unit-card:not(.is-expanded) {
+    content-visibility: auto;
+    contain-intrinsic-size: 90px;
+}
+.rental-unit-card.is-expanded {
+    border-color: var(--luxury-gold-bright);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+}
+body.light-mode .rental-unit-card {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+body.light-mode .rental-unit-card.is-expanded {
+    border-color: #85581A;
+}
+
+.unit-card-compact-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 11px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.16s ease;
+}
+.unit-card-compact-row:hover {
+    background: var(--bg-subtle);
+}
+
+.btn-expand-unit-drawer {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--luxury-gold-soft);
+    border: 1px solid var(--border-gold);
+    color: var(--luxury-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.22s ease, background-color 0.18s ease;
+}
+.rental-unit-card.is-expanded .btn-expand-unit-drawer {
+    transform: rotate(180deg);
+    background: var(--luxury-gold);
+    color: #030712;
+}
+body.light-mode .rental-unit-card.is-expanded .btn-expand-unit-drawer {
+    color: #ffffff;
+}
+
+.unit-card-drawer {
+    border-top: 1px solid var(--border-subtle);
+    padding: 11px;
+    background: var(--card-bg-2);
+}
+
+.btn-gmaps-capsule {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: rgba(56, 189, 248, 0.14);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    text-decoration: none;
+    transition: all 0.16s ease;
+}
+body.light-mode .btn-gmaps-capsule {
+    background: rgba(2, 132, 199, 0.12);
+    color: #0369a1;
+    border-color: rgba(2, 132, 199, 0.4);
+}
+
+.btn-gold-cta {
+    background: linear-gradient(135deg, #e5c687 0%, #c5a880 55%, #a37c40 100%);
+    color: #030712 !important;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 11px 14px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(197, 168, 128, 0.28);
+    transition: transform 0.16s ease, filter 0.16s ease;
+}
+.btn-gold-cta:active {
+    transform: scale(0.98);
+}
+
+.btn-morph-emerald {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    border-color: #34d399 !important;
+    color: #030712 !important;
+    font-weight: 900 !important;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* ==========================================================================
+   5. PEMILIH TANGGAL & JAM RAMPING DI LEMBAR PEMESANAN (ANTI-MUNDUR REAL-TIME)
+   ========================================================================== */
+.btn-date-shortcut {
+    padding: 3px 9px;
+    border-radius: 7px;
+    font-size: 0.58rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-gold);
+    color: var(--luxury-gold);
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+.btn-date-shortcut.active {
+    background: linear-gradient(135deg, var(--luxury-gold-bright) 0%, var(--luxury-gold) 100%);
+    color: #030712;
+    border-color: var(--luxury-gold-bright);
+}
+body.light-mode .btn-date-shortcut.active {
+    color: #ffffff;
+}
+.btn-date-shortcut:disabled,
+.btn-date-shortcut.date-card-expired {
+    opacity: 0.42;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    border-color: var(--border-subtle);
+    color: var(--text-muted);
+}
+
+.custom-date-strip {
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    padding: 3px 1px 5px 1px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.custom-date-strip::-webkit-scrollbar {
+    display: none;
+}
+
+.date-day-card {
+    flex-shrink: 0;
+    width: 54px;
+    padding: 6px 4px;
+    border-radius: 10px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-sub);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+    user-select: none;
+}
+.date-day-card.active {
+    background: linear-gradient(145deg, rgba(197, 168, 128, 0.24) 0%, rgba(16, 185, 129, 0.16) 100%);
+    border: 1.5px solid var(--luxury-gold);
+    color: var(--text-main);
+    box-shadow: 0 3px 10px rgba(197, 168, 128, 0.22);
+}
+.date-day-card:disabled,
+.date-day-card.date-card-expired {
+    opacity: 0.38;
+    cursor: not-allowed !important;
+    background: rgba(15, 23, 42, 0.35);
+    border-style: dashed;
+    color: var(--text-muted);
+}
+body.light-mode .date-day-card.date-card-expired {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #94a3b8 !important;
+}
+
+.time-slot-pill {
+    height: 30px;
+    padding: 0 4px;
+    border-radius: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-sub);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.time-slot-pill.active {
+    background: linear-gradient(135deg, var(--luxury-gold-bright) 0%, var(--luxury-gold) 100%);
+    border-color: var(--luxury-gold-bright);
+    color: #030712;
+    font-weight: 800;
+}
+body.light-mode .time-slot-pill.active {
+    color: #ffffff;
+}
+
+/* SLOT JAM TERKUNCI / LEWAT WAKTU (.time-slot-disabled) */
+.time-slot-pill:disabled,
+.time-slot-pill.time-slot-disabled {
+    opacity: 0.34 !important;
+    cursor: not-allowed !important;
+    text-decoration: line-through;
+    background: rgba(15, 23, 42, 0.35) !important;
+    border-color: var(--border-subtle) !important;
+    color: var(--text-muted) !important;
+    box-shadow: none !important;
+}
+body.light-mode .time-slot-pill:disabled,
+body.light-mode .time-slot-pill.time-slot-disabled {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+}
+
+@keyframes pulseFieldBorder {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); border-color: #ef4444; }
+    50% { box-shadow: 0 0 0 4px rgba(197, 168, 128, 0.45); border-color: #c5a880; }
+}
+.input-error-highlight {
+    border-color: #ef4444 !important;
+    animation: pulseFieldBorder 1.1s ease-in-out 3;
+}
+
+/* BOTTOM SHEET INTERAKTIF (#booking-sheet-overlay) */
+.sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: rgba(3, 7, 18, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeBackdrop 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    .sheet-backdrop {
+        align-items: center;
+        padding: 16px;
+    }
+}
+
+@keyframes fadeBackdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.booking-bottom-sheet {
+    width: 100%;
+    max-width: 540px;
+    max-height: 92dvh;
+    background: var(--card-bg-1);
+    border-top: 2px solid var(--luxury-gold);
+    border-left: 1px solid var(--border-gold);
+    border-right: 1px solid var(--border-gold);
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -15px 45px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUpSheet 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 640px) {
+    .booking-bottom-sheet {
+        border-radius: 22px;
+        border-bottom: 1px solid var(--border-gold);
+    }
+}
+
+@keyframes slideUpSheet {
+    from { transform: translateY(32px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.sheet-scroll-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 14px;
+}
+
+/* PILIHAN OPSI RADIO RAMPING DI KALKULATOR (Tinggi 34px) */
+.calc-option-pill {
+    flex: 1 1 auto;
+    min-width: 96px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 10px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-sub);
+    font-size: 0.68rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.calc-option-pill.active {
+    background: var(--luxury-gold-soft);
+    border-color: var(--luxury-gold);
+    color: var(--luxury-gold);
+}
+
+.calc-option-pill:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+}
+
+.calc-input {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 10px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    font-size: 0.78rem;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.18s ease;
+}
+.calc-input:focus {
+    border-color: var(--luxury-gold);
+}
+
+/* NAVIGASI BAWAH 3-TAB (#mainBottomNav) */
+.bottom-nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    background: var(--hud-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-gold);
+    padding: 5px 10px calc(env(safe-area-inset-bottom, 6px) + 5px) 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.35);
+}
+body.light-mode .bottom-nav-bar {
+    border-top-color: #cbd5e1;
+    box-shadow: 0 -4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 4px;
+    border-radius: 12px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.bottom-nav-item i {
+    font-size: 0.98rem;
+}
+
+.bottom-nav-item.active {
+    background: var(--luxury-gold-soft);
+    color: var(--luxury-gold);
+    border-color: var(--border-gold);
+}
+
+/* ==========================================================================
+   6. KUNCI KONTRAS 100% MODE SIANG (body.light-mode) — BEBAS DISTORSI WARNA
+   ========================================================================== */
+body.light-mode .text-emerald-400,
+body.light-mode .text-emerald-300 {
+    color: #047857 !important;
+}
+body.light-mode .text-amber-400 {
+    color: #b45309 !important;
+}
+body.light-mode .text-\[\#c5a880\] {
+    color: #85581A !important;
+}
+body.light-mode .text-sky-400 {
+    color: #0369a1 !important;
+}
+body.light-mode .calc-input,
+body.light-mode .search-input-compact {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+body.light-mode .pkg-dynamic-cell {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+body.light-mode .pkg-dynamic-cell.pkg-cell-highlight {
+    background-color: rgba(133, 88, 26, 0.1) !important;
+    border-color: #85581A !important;
+}
+
+/* MODE HEMAT BATERAI / LITE PERFORMANCE */
+body.lite-performance-mode *,
+body.lite-performance-mode *::before,
+body.lite-performance-mode *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: none !important;
+    transition: none !important;
+}

@@ -1,0 +1,21 @@
+{
+  "name": "bagantara-public",
+  "version": "12.5.0",
+  "private": true,
+  "type": "module",
+  "description": "BAGANTARA Public Web Application (v12.5 Zero-Client-Leak & High-Scale Edition)",
+  "scripts": {
+    "build": "node scripts/build-secure.mjs"
+  },
+  "devDependencies": {
+    "acorn": "^8.11.3",
+    "javascript-obfuscator": "^4.1.1",
+    "terser": "^5.31.0"
+  },
+  "optionalDependencies": {
+    "javascript-obfuscator": "^4.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

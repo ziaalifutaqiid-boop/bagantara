@@ -1,0 +1,162 @@
+/* ==========================================================================
+   FILE: modules/_template-layanan-baru/css/template-service.css
+   FUNGSI: Styling Starter Kit Layanan Baru dengan Kunci Kontras Siang/Malam
+   ========================================================================== */
+:root {
+    --void-black: #070d1f;
+    --card-bg: #0f172a;
+    --card-border: rgba(212, 175, 55, 0.35);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --gold-accent: #d4af37;
+    --emerald-accent: #10b981;
+    --box-bg: #090d16;
+}
+
+body.light-mode {
+    --void-black: #f1f5f9;
+    --card-bg: #ffffff;
+    --card-border: rgba(146, 96, 10, 0.38);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --gold-accent: #9a6700;
+    --emerald-accent: #047857;
+    --box-bg: #f8fafc;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background: var(--void-black);
+    color: var(--text-main);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+}
+
+.tpl-service-shell {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.tpl-hero-card {
+    width: 100%;
+    max-width: 520px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: 20px;
+    padding: 24px 20px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tpl-badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--gold-accent);
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid var(--card-border);
+    padding: 5px 11px;
+    border-radius: 999px;
+}
+
+.tpl-title {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.tpl-desc {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.tpl-telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.tpl-telemetry-box {
+    background: var(--box-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tpl-telemetry-label {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.58rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.tpl-telemetry-value {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: var(--emerald-accent);
+}
+
+.tpl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.tpl-btn-primary,
+.tpl-btn-secondary {
+    flex: 1 1 200px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.15s ease;
+}
+
+.tpl-btn-primary {
+    background: var(--emerald-accent);
+    color: #ffffff;
+    border: none;
+}
+
+.tpl-btn-secondary {
+    background: var(--box-bg);
+    color: var(--gold-accent);
+    border: 1px solid var(--card-border);
+}
+
+.tpl-btn-primary:active,
+.tpl-btn-secondary:active {
+    transform: scale(0.98);
+}

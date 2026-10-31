@@ -1,0 +1,20 @@
+# Dependencies & Build Output
+node_modules/
+.vercel/
+.npm/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+
+# Source Maps & Debug Logs
+*.map
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Internal Server Configs & OS Files
+server-config*/
+.DS_Store
+Thumbs.db

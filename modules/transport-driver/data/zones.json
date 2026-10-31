@@ -1,0 +1,20 @@
+{
+  "version": 4,
+  "default_locked_message": {
+    "title": "ZONA BELUM TERSEDIA",
+    "body": "Halo Admin, saya melihat layanan ini belum beroperasi di wilayah saya. Saya tertarik untuk menjadi pelopor Pengemudi pertama!",
+    "wa_rekrutmen": "6282225225141"
+  },
+  "active_zones": [
+    { "zone_id": "KDR-PARE-01", "city_name": "Kediri", "center": { "lat": -7.768049, "lng": 112.196514 }, "radius_km": 25.0, "is_open": true },
+    { "zone_id": "MLG-01", "city_name": "Malang Kota", "center": { "lat": -7.979700, "lng": 112.630400 }, "radius_km": 15.0, "is_open": false },
+    { "zone_id": "SBY-01", "city_name": "Surabaya", "center": { "lat": -7.250445, "lng": 112.768845 }, "radius_km": 20.0, "is_open": false },
+    { "zone_id": "SDA-01", "city_name": "Sidoarjo", "center": { "lat": -7.447800, "lng": 112.718300 }, "radius_km": 15.0, "is_open": false },
+    { "zone_id": "GSK-01", "city_name": "Gresik", "center": { "lat": -7.166200, "lng": 112.654300 }, "radius_km": 15.0, "is_open": false },
+    { "zone_id": "MJK-01", "city_name": "Mojokerto", "center": { "lat": -7.472600, "lng": 112.433800 }, "radius_km": 12.0, "is_open": false },
+    { "zone_id": "PSR-01", "city_name": "Pasuruan", "center": { "lat": -7.645300, "lng": 112.907500 }, "radius_km": 15.0, "is_open": false },
+    { "zone_id": "BTU-01", "city_name": "Batu", "center": { "lat": -7.867100, "lng": 112.523900 }, "radius_km": 10.0, "is_open": false },
+    { "zone_id": "BLT-01", "city_name": "Blitar", "center": { "lat": -8.098300, "lng": 112.168100 }, "radius_km": 15.0, "is_open": false },
+    { "zone_id": "MDN-01", "city_name": "Madiun", "center": { "lat": -7.629800, "lng": 111.523900 }, "radius_km": 15.0, "is_open": false }
+  ]
+}

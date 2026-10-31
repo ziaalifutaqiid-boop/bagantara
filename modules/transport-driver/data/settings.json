@@ -1,0 +1,74 @@
+{
+  "version": 13.2,
+  "map_config": {
+    "tile_layer_url": "https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=GHEMVdokax4heMQCeIxM",
+    "fallback_tile_url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "max_zoom": 19,
+    "default_zoom": 16,
+    "focus_zoom": 17,
+    "tile_size": 256,
+    "keep_buffer": 2,
+    "max_tile_errors": 2,
+    "default_center": {
+      "lat": -7.768049,
+      "lng": 112.196514
+    },
+    "default_avatar_url": "./assets/icon-192.png",
+    "google_maps_search_url": "https://www.google.com/maps/search/?api=1&query=",
+    "google_maps_base_url": "https://www.google.com/maps/@",
+    "whatsapp_base_url": "https://wa.me/"
+  },
+  "geocoder_api": {
+    "maptiler_key": "GHEMVdokax4heMQCeIxM",
+    "maptiler_search_url": "https://api.maptiler.com/geocoding/{query}.json?key=GHEMVdokax4heMQCeIxM&country=id&language=id&limit=6",
+    "maptiler_reverse_url": "https://api.maptiler.com/geocoding/{lng},{lat}.json?key=GHEMVdokax4heMQCeIxM&language=id&limit=1"
+  },
+  "routing_api": {
+    "osrm_base_url": "https://router.project-osrm.org/route/v1/driving/"
+  },
+  "paths": {
+    "drivers": "drivers",
+    "radar_tiket": "radar_tiket",
+    "sesi_komunikasi": "sesi_komunikasi",
+    "inbox_mitra": "inbox_mitra",
+    "inbox_driver": "inbox_driver",
+    "order_audit_log": "order_audit_log",
+    "device_reputation": "device_reputation"
+  },
+  "micro_backend": {
+    "gas_fcm_url": "https://script.google.com/macros/s/AKfycbxkSFTmerLbUa5iEWEqyjUz9OVBo8xTznm90HJMKDRBQ9t-x8UxjUHas_K1JqqMgHzneg/exec",
+    "gas_unfurl_url": "https://script.google.com/macros/s/AKfycbxkSFTmerLbUa5iEWEqyjUz9OVBo8xTznm90HJMKDRBQ9t-x8UxjUHas_K1JqqMgHzneg/exec"
+  },
+  "firebase_config": {
+    "projectId": "bagantara-core",
+    "databaseURL": "https://bagantara-core-default-rtdb.asia-southeast1.firebasedatabase.app"
+  },
+  "firebase_core": {
+    "projectId": "bagantara-core",
+    "databaseURL": "https://bagantara-core-default-rtdb.asia-southeast1.firebasedatabase.app"
+  },
+  "firebase_history": {
+    "projectId": "futaqi-ali",
+    "databaseURL": "https://futaqi-ali-default-rtdb.asia-southeast1.firebasedatabase.app"
+  },
+  "firebase_overflow": {
+    "projectId": "futaqi-ali",
+    "databaseURL": "https://futaqi-ali-default-rtdb.asia-southeast1.firebasedatabase.app"
+  },
+  "firebase_radar": {
+    "projectId": "chatting-88040",
+    "databaseURL": "https://chatting-88040-default-rtdb.asia-southeast1.firebasedatabase.app"
+  },
+  "firebase_chat": {
+    "projectId": "chatting-88040",
+    "databaseURL": "https://chatting-88040-default-rtdb.asia-southeast1.firebasedatabase.app"
+  },
+  "cluster_config": {
+    "node1_core": "https://bagantara-core-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "node1_firestore_project": "bagantara-core",
+    "node2_history": "https://futaqi-ali-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "node2_overflow": "https://futaqi-ali-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "node3_radar": "https://chatting-88040-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "node3_chat": "https://chatting-88040-default-rtdb.asia-southeast1.firebasedatabase.app"
+  }
+}
